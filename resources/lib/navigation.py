@@ -138,7 +138,7 @@ def getTVShow(channel_id, tvshow_id, iconImage, infoLabels):
 
 def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
     selection = '{totalCount,data{id,titles{default},images(subType:"Teaser"){url,subType},shortDescriptions{default},links,duration,productionYear,createdAt,tvShow{titles{default}},season{number},episode{number,titles{default},metaDescriptions{default},productionYear,createdAt,modifiedAt,airdates}}}'
-    url = serviceUrl + path + '?selection=' + selection + '&limit=' + str(items_per_page) + '&skip=' + str(page * items_per_page)
+    url = serviceUrl + path + '?selection=' + selection + '&limit=' + str(items_per_page) + '&skip=' + str(page * items_per_page) + '&sortBy=airdate&sortAscending=false'
     
     if channel_id is not None:
         url += '&channelId=' + channel_id 
@@ -203,9 +203,10 @@ def getInfoLabel(item_data, item_type, channel_id):
             
     if len(item_data.get('episode', {})) > 0:
         #info['title'] = item_data.get('episode').get('titles').get('default') if item_data.get('episode').get('titles').get('default').find('Folge') == -1 else info['title']
-        info['mediatype'] = 'episode'
         if item_data.get('episode').get('number', 0) > 0:
             info['episode'] = item_data.get('episode').get('number')
+        elif 'season' in info:
+            del info['season']
         if item_data.get('episode').get('metaDescriptions', {}).get('default', '') != '':
             info['plot'] = item_data.get('episode').get('metaDescriptions').get('default')
         if item_data.get('episode').get('productionYear', 0) > 0 and item_data.get('episode').get('productionYear') > 1901:
@@ -219,6 +220,11 @@ def getInfoLabel(item_data, item_type, channel_id):
 
     if item_type == 'tvshow':
         info['tvshowtitle'] = info['title']
+
+    if 'season' not in info and 'episode' not in info:
+        info['mediatype'] = 'movie'
+    else:
+        info['mediatype'] = 'episode'
 
     return info
 
