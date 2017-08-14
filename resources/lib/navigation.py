@@ -87,18 +87,26 @@ def listLetters(channel_id):
 
 def listTVShows(path, channel_id=None, letter=None, page=0):
     selection = '{totalCount,data{id,titles{default},images(subType:"Teaser"){url,subType},shortDescriptions{default}}}'
-    url = serviceUrl + path + '?selection=' + selection + "&limit=" + str(items_per_page) + '&skip=' + str(page * items_per_page) + '&sortBy=titles.default&sortAscending=true'
+#    url = serviceUrl + path + '?selection=' + selection + "&limit=" + str(items_per_page) + '&skip=' + str(page * items_per_page) + '&sortBy=titles.default&sortAscending=true'
+    url = serviceUrl + path + '?selection=' + selection + '&sortBy=titles.default&sortAscending=true' + '&limit=5000'
 
     if channel_id is not None:
         url += '&channelId=' + channel_id    
-    if letter is not None:
-        url += '&search=(^' + letter + ')'
+#    if letter is not None:
+#        url += '&search=(^' + letter + ')'
 
     response = seventv.getUrl(url).get('response')
     content = response.get('data')
 
     for item in content:
         title = item.get('titles').get('default')
+
+        if letter is not None:
+            if letter != '\d' and re.search('(^[' + letter.lower() + letter.title() + '])', title) is None:
+                continue
+            elif letter == '\d' and re.search('(^' + letter + ')', title) is None:
+                continue
+
         iconImage = getIcon(item)
         infoLabels = getInfoLabel(item, 'tvshow', channel_id)
         
@@ -111,15 +119,15 @@ def listTVShows(path, channel_id=None, letter=None, page=0):
         addDir(title, url, iconImage, infoLabels)
         xbmcplugin.setContent(addon_handle, 'tvshows')
 
-    if response.get('totalCount') > ((page + 1) * items_per_page):
-        page += 1
-
-        parameter = {'action': 'listTVShows', 'path': path, 'letter': letter if letter != '#' else '\d', 'page': page}
-        if channel_id is not None:
-            parameter['channel_id'] = channel_id
-
-        url = common.build_url(parameter)
-        addDir('Nächste Seite', url)
+#    if response.get('totalCount') > ((page + 1) * items_per_page):
+#        page += 1
+#
+#        parameter = {'action': 'listTVShows', 'path': path, 'letter': letter if letter != '#' else '\d', 'page': page}
+#        if channel_id is not None:
+#            parameter['channel_id'] = channel_id
+#
+#        url = common.build_url(parameter)
+#        addDir('Nächste Seite', url)
 
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
 
@@ -137,8 +145,9 @@ def getTVShow(channel_id, tvshow_id, iconImage, infoLabels):
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
 
 def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
-    selection = '{totalCount,data{id,titles{default},images(subType:"Teaser"){url,subType},shortDescriptions{default},links,duration,productionYear,createdAt,tvShow{titles{default}},season{number},episode{number,titles{default},metaDescriptions{default},productionYear,createdAt,modifiedAt,airdates}}}'
-    url = serviceUrl + path + '?selection=' + selection + '&limit=' + str(items_per_page) + '&skip=' + str(page * items_per_page) + '&sortBy=airdate&sortAscending=false'
+    selection = '{totalCount,data{id,type,titles{default},images(subType:"Teaser"){url,subType},shortDescriptions{default},links,duration, subType,productionYear,createdAt,tvShow{titles{default}},season{number},episode{number,titles{default},metaDescriptions{default},productionYear,createdAt,modifiedAt,airdates}}}'
+#    url = serviceUrl + path + '?selection=' + selection + '&limit=' + str(items_per_page) + '&skip=' + str(page * items_per_page) + '&sortBy=airdate&sortAscending=false'
+    url = serviceUrl + path + '?selection=' + selection + '&sortBy=airdate&sortAscending=false' + '&limit=5000'
     
     if channel_id is not None:
         url += '&channelId=' + channel_id 
@@ -162,19 +171,19 @@ def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
         addVideo(title, url, iconImage, infoLabels, False)
         xbmcplugin.setContent(addon_handle, 'episode')
 
-    if response.get('totalCount') > ((page + 1) * items_per_page):
-        page += 1
-
-        parameter = {'action': 'listVideos', 'path': path, 'tvshow_id': tvshow_id, 'video_type': video_type, 'page': page}
-        if channel_id is not None:
-            parameter['channel_id'] = channel_id
-        if tvshow_id is not None:
-            parameter['tvshow_id'] = tvshow_id
-        if video_type is not None:
-            parameter['video_type'] = video_type
-
-        url = common.build_url(parameter)
-        addDir('Nächste Seite', url)
+#    if response.get('totalCount') > ((page + 1) * items_per_page):
+#        page += 1
+#
+#        parameter = {'action': 'listVideos', 'path': path, 'tvshow_id': tvshow_id, 'video_type': video_type, 'page': page}
+#        if channel_id is not None:
+#            parameter['channel_id'] = channel_id
+#        if tvshow_id is not None:
+#            parameter['tvshow_id'] = tvshow_id
+#        if video_type is not None:
+#            parameter['video_type'] = video_type
+#
+#        url = common.build_url(parameter)
+#        addDir('Nächste Seite', url)
 
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
 

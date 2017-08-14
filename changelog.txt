@@ -1,2 +1,4 @@
+1.0.1
+- Remove search term
 1.0.0
 - Initial Release
