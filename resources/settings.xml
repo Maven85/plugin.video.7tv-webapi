@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
 	<setting id="apikey" type="text" label="Api-Key" default=""/>
-<!-- <setting id="items_per_page" type="slider" label="Einträge pro Seite" default="50" range="10,10,500" option="int"/> -->
+    <setting id="videos_per_page" type="slider" label="Anzahl an Videos pro Seite" default="50" range="10,10,5000" option="int"/>
 </settings>

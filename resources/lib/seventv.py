@@ -5,6 +5,7 @@ import sys
 import json
 import urllib, urllib2
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+import ast
 
 addon = xbmcaddon.Addon()
 addon_handle = int(sys.argv[1])
@@ -13,7 +14,7 @@ if not apiKey:
     apiKey = '255d97968f286ada2c90548e34230628'
     addon.setSetting('apiKey', apiKey)
 
-def playVideo(video_id, client_location, source_id=None):
+def playVideo(video_id, client_location, source_id=None, infoLabels=None):
     from hashlib import sha1
 
     # Inputstream settings
@@ -87,11 +88,18 @@ def playVideo(video_id, client_location, source_id=None):
     li.setProperty('inputstreamaddon', 'inputstream.adaptive')
     
     try:
-      lic = json_data["drm"]["licenseAcquisitionUrl"]        
-      token = json_data["drm"]["token"]                
-      li.setProperty('inputstream.adaptive.license_key', lic +"?token="+token+"|"+userAgent+"|R{SSM}|")            
+        lic = json_data["drm"]["licenseAcquisitionUrl"]        
+        token = json_data["drm"]["token"]                
+        li.setProperty('inputstream.adaptive.license_key', lic +"?token="+token+"|"+userAgent+"|R{SSM}|")            
     except:
-       pass
+        pass
+    
+    if infoLabels is not None:
+        try:
+            li.setInfo('video', ast.literal_eval(infoLabels))
+        except:
+            pass
+
 
     xbmcplugin.setResolvedUrl(addon_handle, True, li) 
     

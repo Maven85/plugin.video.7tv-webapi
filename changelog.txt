@@ -1,4 +1,5 @@
 1.0.1
-- Remove search term
+- Paging only for displaying videos
+- Set infolabels for inputstream's listitem 
 1.0.0
 - Initial Release

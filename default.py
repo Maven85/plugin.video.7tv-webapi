@@ -29,6 +29,6 @@ if 'action' in params:
     elif params['action'] == 'listVideos':
         nav.listVideos(params.get('path'), params.get('channel_id', None), params.get('tvshow_id'), params.get('video_type'), int(params.get('page')))
     elif params['action'] == 'playVideo':
-        seventv.playVideo(params.get('video_id'), params.get('video_url'))
+        seventv.playVideo(params.get('video_id'), params.get('video_url'), infoLabels=params.get('infoLabels', None))
 else:
     nav.rootDir()
