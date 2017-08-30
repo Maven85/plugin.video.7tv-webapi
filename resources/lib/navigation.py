@@ -226,6 +226,12 @@ def getInfoLabel(item_data, item_type, channel_id):
             info['aired'] = datetime.fromtimestamp(dates[0].get('date')).strftime("%Y-%m-%d")
             info['dateadded'] = datetime.fromtimestamp(dates[0].get('date')).strftime("%Y-%m-%d %H:%M:%S")
 
+    if item_data.get('titles').get('default').find('Staffel') > -1 and info.get('season', None) == None:
+        info['season'] = re.compile('Staffel ([0-9]+)', re.DOTALL).findall(item_data.get('titles').get('default'))[0]  
+    
+    if item_data.get('titles').get('default').find('Episode') > -1 and info.get('episode', None) == None:
+        info['episode'] = re.compile('Episode ([0-9]+)', re.DOTALL).findall(item_data.get('titles').get('default'))[0]    
+
     if item_type == 'tvshow':
         info['tvshowtitle'] = info['title']
 
