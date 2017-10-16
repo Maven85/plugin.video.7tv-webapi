@@ -34,6 +34,8 @@ channels = [
             , {'id': '5', 'label': 'ProSieben MAXX', 'icon': 'prosiebenmaxx.png'}
             , {'id': '6', 'label': 'SAT.1 Gold', 'icon': 'sat1gold.png'}                
             , {'id': '7', 'label': 'kabel eins Doku', 'icon': 'kabeleinsdoku.png'}
+            , {'id': '110', 'label': 'DMAX', 'icon': 'dmax.png'}
+            , {'id': '111', 'label': 'TLC', 'icon': 'tlc.png'}
            ]
 
 letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '#']
