@@ -46,7 +46,7 @@ def rootDir():
     for dir in rootDirs:
         url = common.build_url({'action': dir.get('action'), 'path': dir.get('path')})
         addDir(dir.get('label'), url)
-        xbmcgui.ListItem(dir.get('label'))
+        #xbmcgui.ListItem(dir.get('label'))
 
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
     
@@ -58,7 +58,7 @@ def showChannels():
 
         url = common.build_url(parameter)
         addDir(channel.get('label'), url, icon_path + channel.get('icon'))
-        xbmcgui.ListItem(channel.get('label'))
+        #xbmcgui.ListItem(channel.get('label'))
 
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
     
@@ -66,11 +66,10 @@ def addDir(label, url, icon=None, infoLabels={}):
     return addVideo(label, url, icon, infoLabels)
 
 def addVideo(label, url, icon=None, infoLabels={}, isFolder=True):
-    li = xbmcgui.ListItem(label, iconImage=icon)
+    li = xbmcgui.ListItem(label, iconImage=icon, thumbnailImage=icon)
     li.setInfo('video', infoLabels)
-    if not isFolder:
-        li.setProperty('IsPlayable', 'true')
-        li.setArt({'banner': icon})
+    li.setArt({'banner': icon, 'fanart': icon})
+    li.setProperty('IsPlayable', str(isFolder))
 
     xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li, isFolder=isFolder)
     return li
@@ -83,7 +82,6 @@ def listLetters(channel_id):
 
         url = common.build_url(parameter)
         addDir(letter.title(), url)
-        xbmcgui.ListItem(letter.title())
         
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
 
@@ -163,7 +161,7 @@ def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
     content = response.get('data')
 
     for item in content:
-        title = item.get('titles').get('default')
+        title = item.get('titles').get('default') if not tvshow_id == None else '[COLOR blue]' + item.get('tvShow', {}).get('titles', {}).get('default', '') + ' |[/COLOR] ' + item.get('titles').get('default')
         iconImage = getIcon(item) 
         infoLabels = getInfoLabel(item, 'video', channel_id)
             
@@ -236,11 +234,11 @@ def getInfoLabel(item_data, item_type, channel_id):
 
     if item_type == 'tvshow':
         info['tvshowtitle'] = info['title']
-
-    if 'season' not in info and 'episode' not in info:
-        info['mediatype'] = 'movie'
     else:
-        info['mediatype'] = 'episode'
+        if 'season' not in info and 'episode' not in info:
+            info['mediatype'] = 'movie'
+        else:
+            info['mediatype'] = 'episode'
 
     return info
 
