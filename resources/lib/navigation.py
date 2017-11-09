@@ -46,7 +46,6 @@ def rootDir():
     for dir in rootDirs:
         url = common.build_url({'action': dir.get('action'), 'path': dir.get('path')})
         addDir(dir.get('label'), url)
-        #xbmcgui.ListItem(dir.get('label'))
 
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
     
@@ -58,12 +57,11 @@ def showChannels():
 
         url = common.build_url(parameter)
         addDir(channel.get('label'), url, icon_path + channel.get('icon'))
-        #xbmcgui.ListItem(channel.get('label'))
 
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
     
 def addDir(label, url, icon=None, infoLabels={}):
-    return addVideo(label, url, icon, infoLabels)
+    addVideo(label, url, icon, infoLabels)
 
 def addVideo(label, url, icon=None, infoLabels={}, isFolder=True):
     li = xbmcgui.ListItem(label, iconImage=icon, thumbnailImage=icon)
@@ -72,7 +70,6 @@ def addVideo(label, url, icon=None, infoLabels={}, isFolder=True):
     li.setProperty('IsPlayable', str(isFolder))
 
     xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li, isFolder=isFolder)
-    return li
     
 def listLetters(channel_id):
     for letter in letters:
