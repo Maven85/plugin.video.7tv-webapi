@@ -6,6 +6,8 @@ import json
 import urllib, urllib2
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 import ast
+import re
+from inputstreamhelper import Helper
 
 addon = xbmcaddon.Addon()
 addon_handle = int(sys.argv[1])
@@ -14,11 +16,14 @@ if not apiKey:
     apiKey = '255d97968f286ada2c90548e34230628'
     addon.setSetting('apiKey', apiKey)
 
+userAgent = 'User-Agent=Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'
+
 def playVideo(video_id, client_location, source_id=None, infoLabels=None):
     from hashlib import sha1
 
-    # Inputstream settings
-    isInputstream = getInputstreamAddon()
+    # Inputstream and DRM
+    helper = Helper(protocol='mpd', drm='widevine')
+    isInputstream = helper.check_inputstream()
         
     if not isInputstream:
         access_token = 'h''b''b''t''v'  
@@ -80,8 +85,6 @@ def playVideo(video_id, client_location, source_id=None, infoLabels=None):
         except:
           data=ul                                 
 
-    userAgent = 'User-Agent=Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'
-
     li = xbmcgui.ListItem(path=data + "|"+userAgent)         
     li.setProperty("inputstream.adaptive.license_type", "com.widevine.alpha")
     li.setProperty("inputstream.adaptive.manifest_type", "mpd")
@@ -101,13 +104,70 @@ def playVideo(video_id, client_location, source_id=None, infoLabels=None):
             pass
 
 
-    xbmcplugin.setResolvedUrl(addon_handle, True, li) 
+    xbmcplugin.setResolvedUrl(addon_handle, True, li)
+
+def playLiveTV(property_name, client_location, access_token, client_token, infoLabels={}):
+    from hashlib import sha1
+
+    # Inputstream and DRM
+    helper = Helper(protocol='mpd', drm='widevine')
+    isInputstream = helper.check_inputstream()
     
-def getUrl(url,data="x",header=""):
+    url = 'https://vas-live-mdp.glomex.com/live/1.0/getprotocols?%s' % (urllib.urlencode({
+        'access_token': access_token,
+        'client_location': client_location,
+        'property_name': property_name,
+        'client_token': client_token,
+        'secure_delivery': 'true'
+    }))
+
+    data = getUrl(url)
+    
+    server_token = data.get('server_token')
+    salt = '01!8d8F_)r9]4s[qeuXfP%'
+    client_token = salt[:2] + sha1(''.join([property_name, salt, access_token, server_token, client_location, 'dash:widevine']).encode('utf-8')).hexdigest()
+
+    url = 'https://vas-live-mdp.glomex.com/live/1.0/geturls?%s' % (urllib.urlencode({
+        'access_token': access_token,
+        'client_location': client_location,
+        'property_name': property_name,
+        'protocols': 'dash:widevine',
+        'server_token': server_token,
+        'client_token': client_token,
+        'secure_delivery': 'true'
+    }))
+
+    print url
+
+
+    data = getUrl(url)['urls']['dash']['widevine']
+    
+    li = xbmcgui.ListItem(path=data['url'] + "|"+userAgent)         
+    li.setProperty("inputstream.adaptive.license_type", "com.widevine.alpha")
+    li.setProperty("inputstream.adaptive.manifest_type", "mpd")
+    li.setProperty('inputstreamaddon', 'inputstream.adaptive')
+    
+    try:
+        lic = data["drm"]["licenseAcquisitionUrl"]        
+        token = data["drm"]["token"]                
+        li.setProperty('inputstream.adaptive.license_key', lic +"?token="+token+"|"+userAgent+"|R{SSM}|")            
+    except:
+        pass
+    
+    if infoLabels is not None and len(infoLabels) > 0:
+        try:
+            li.setInfo('video', ast.literal_eval(infoLabels))
+        except:
+            pass
+
+
+    xbmcplugin.setResolvedUrl(addon_handle, True, li)
+    
+    
+def getUrl(url, data="x", header=""):
     xbmc.log("Get Url: " + url)
 
-    opener = urllib2.build_opener()           
-    userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0"
+    opener = urllib2.build_opener()
     if header == "":
       opener.addheaders = [('User-Agent', userAgent), ('key', apiKey)]        
     else:
@@ -123,14 +183,5 @@ def getUrl(url,data="x",header=""):
          xbmc.log("Error : " + cc)
    
     opener.close()
+    
     return json.loads(content)
-
-# Get installed inputstream addon
-def getInputstreamAddon():
-    r = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "id": 1, "method": "Addons.GetAddonDetails", "params": {"addonid":"inputstream.adaptive", "properties": ["enabled"]}}')
-    data = json.loads(r)
-    if not "error" in data.keys():
-        if data["result"]["addon"]["enabled"] == True:
-            return True
-        
-    return None

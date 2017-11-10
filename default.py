@@ -11,8 +11,10 @@ params = dict(urlparse.parse_qsl(sys.argv[2][1:]))
 # Router for all plugin actions
 if 'action' in params:
     print params
-
-    if params['action'] == 'recenthighlights':
+    
+    if params['action'] == 'livechannels':
+        nav.showLiveChannels()
+    elif params['action'] == 'recenthighlights':
         nav.listVideos(params.get('path'))
     elif params['action'] == 'recenttvshows':
         nav.listTVShows(params.get('path'))
@@ -30,5 +32,7 @@ if 'action' in params:
         nav.listVideos(params.get('path'), params.get('channel_id', None), params.get('tvshow_id'), params.get('video_type'), int(params.get('page')))
     elif params['action'] == 'playVideo':
         seventv.playVideo(params.get('video_id'), params.get('video_url'), infoLabels=params.get('infoLabels', None))
+    elif params['action'] == 'playLiveTV':
+        seventv.playLiveTV(params.get('property_name'), params.get('client_location'), params.get('access_token'), params.get('client_token'), params.get('infoLabels'))
 else:
     nav.rootDir()

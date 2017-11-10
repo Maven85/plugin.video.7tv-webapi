@@ -18,24 +18,92 @@ img_profile = '/profile:ezone-teaser'
 img_sizes = ['140x79', '200x260', '229x122', '300x160', '620x348']
 videos_per_page = int(addon.getSetting('videos_per_page'))
 
-rootDirs = [ 
-              {'label': 'Highlights', 'action': 'recenthighlights', 'path': '/recent/highlights'}
+rootDirs = [
+              {'label': 'Live', 'action': 'livechannels'}
+            , {'label': 'Highlights', 'action': 'recenthighlights', 'path': '/recent/highlights'}
             , {'label': 'Beliebte Sendungen', 'action': 'recenttvshows', 'path': '/recent/tvshows'}
             , {'label': 'Ganze Folgen', 'action': 'recentvideos', 'path': '/recent/videos'}
             , {'label': 'Mediatheken', 'action': 'libraries'} 
            ]
 
 channels = [
-              {'label': 'Alle Sender', 'icon': 'seventv.png'}
-            , {'id': '1', 'label': 'ProSieben', 'icon': 'pro7.png'}
-            , {'id': '2', 'label': 'SAT.1', 'icon': 'sat1.png'}
-            , {'id': '3', 'label': 'kabel eins', 'icon': 'kabel1.png'}
-            , {'id': '4', 'label': 'Sixx', 'icon': 'sixx.png'}
-            , {'id': '5', 'label': 'ProSieben MAXX', 'icon': 'prosiebenmaxx.png'}
-            , {'id': '6', 'label': 'SAT.1 Gold', 'icon': 'sat1gold.png'}                
-            , {'id': '7', 'label': 'kabel eins Doku', 'icon': 'kabeleinsdoku.png'}
-            , {'id': '110', 'label': 'DMAX', 'icon': 'dmax.png'}
-            , {'id': '111', 'label': 'TLC', 'icon': 'tlc.png'}
+              {
+                  'label': 'Alle Sender'
+                , 'icon': 'seventv.png'
+              }
+            , {
+                  'id': '1'
+                , 'label': 'ProSieben'
+                , 'icon': 'pro7.png'
+                , 'property_name': 'prosieben-de-24x7'
+                , 'client_location': 'https://www.prosieben.de/livestream'
+                , 'access_token': 'prosieben' 
+                , 'client_token':  '01b353c155a9006e80ae7c5ed3eb1c09c0a6995556'
+              }
+            , {
+                  'id': '2'
+                , 'label': 'SAT.1'
+                , 'icon': 'sat1.png'
+                , 'property_name': 'sat1-de-24x7' 
+                , 'client_location': 'https://www.sat1.de/livestream'
+                , 'access_token': 'sat1'
+                , 'client_token':  '01e491d866b37341734d691a8acb48af37a77bf26f'
+              }
+            , {
+                  'id': '3'
+                , 'label': 'kabel eins'
+                , 'icon': 'kabel1.png'
+                , 'property_name': 'kabeleins-de-24x7' 
+                , 'client_location': 'https://www.kabeleins.de/livestream'
+                , 'access_token': 'kabeleins'
+                , 'client_token':  '014c87bfe2ce4aebf6219ed699602a1f152194e4cd'
+              }
+            , {
+                  'id': '4'
+                , 'label': 'Sixx'
+                , 'icon': 'sixx.png'
+                , 'property_name': 'sixx-de-24x7' 
+                , 'client_location': 'https://www.sixx.de/livestream'
+                , 'access_token': 'sixx'
+                , 'client_token':  '017705703133050842d3ca11fc20a6fc205b8b4025'
+              }
+            , {
+                  'id': '5'
+                , 'label': 'ProSiebenMaxx'
+                , 'icon': 'prosiebenmaxx.png'
+                , 'property_name' : 'prosiebenmaxx-de-24x7' 
+                , 'client_location': 'https://www.prosiebenmaxx.de/livestream'
+                , 'access_token' : 'prosiebenmaxx'
+                , 'client_token':  '01963623e9b364805dbe12f113dba1c4914c24d189'
+              }
+            , {
+                  'id': '6'
+                , 'label': 'SAT.1 Gold'
+                , 'icon': 'sat1gold.png'
+                , 'property_name' : 'sat1gold-de-24x7' 
+                , 'client_location': 'https://www.sat1gold.de/livestream'
+                , 'access_token' : 'sat1gold'
+                , 'client_token': '01107e433196365e4d54d0f90bdf1070cd2df5e190'
+              }                
+            , {
+                  'id': '7'
+                , 'label': 'kabel eins Doku'
+                , 'icon': 'kabeleinsdoku.png'
+                , 'property_name' : 'kabeleinsdoku-de-24x7' 
+                , 'client_location': 'https://www.kabeleinsdoku.de/livestream'
+                , 'access_token' : 'kabeleinsdoku'
+                , 'client_token': '01ea6d32ff5de5d50d0290dbdf819f9b856bcfd44a'
+              }
+            , {
+                  'id': '110'
+                , 'label': 'DMAX'
+                , 'icon': 'dmax.png'
+              }
+            , {
+                  'id': '111'
+                , 'label': 'TLC'
+                , 'icon': 'tlc.png'
+              }
            ]
 
 letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '#']
@@ -48,7 +116,30 @@ def rootDir():
         addDir(dir.get('label'), url)
 
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
-    
+
+def showLiveChannels():
+    selection = '{totalCount,data{title,tvShow{title},season{number},episode{number},images(subType:"cover"){url,subType},tvChannelName,description,productionYear}}'
+    url = serviceUrl + '/epg/now?selection=' + selection
+
+    response = seventv.getUrl(url).get('response')
+    content = response.get('data')
+
+    for channel in channels:
+        infoLabels = {}
+        thumbnailImage = None
+        if channel.get('property_name', '') != '':
+            for channel_content in content:
+                if channel_content.get('tvChannelName').lower() == channel.get('label').lower():
+                    infoLabels = getInfoLabel(channel_content, 'live', channel.get('id'))
+                    thumbnailImage = getIcon(channel_content)
+
+            url = common.build_url({'action': 'playLiveTV', 'property_name': channel.get('property_name'), 'client_location': channel.get('client_location'), 'access_token': channel.get('access_token'), 'client_token': channel.get('client_token'), 'callback': channel.get('callback'), 'infoLables': infoLabels})
+            title = infoLabels.get('title') if infoLabels.get('tvshowtitle', '') == '' else '[COLOR blue]' + infoLabels.get('tvshowtitle') +  ' |[/COLOR] ' + infoLabels.get('title')
+            title = '[COLOR orange][' + channel.get('label') + '][/COLOR] ' + str(title)
+            addVideo(title, url, icon_path + channel.get('icon'), thumbnailImage, infoLabels)
+
+    xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
+
 def showChannels():
     for channel in channels:
         parameter = {'action': 'listLetters'}
@@ -60,11 +151,11 @@ def showChannels():
 
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
     
-def addDir(label, url, icon=None, infoLabels={}):
-    addVideo(label, url, icon, infoLabels)
+def addDir(label, url, icon=None, thumbnail=None, infoLabels={}):
+    addVideo(label, url, icon, thumbnail, infoLabels, True)
 
-def addVideo(label, url, icon=None, infoLabels={}, isFolder=True):
-    li = xbmcgui.ListItem(label, iconImage=icon, thumbnailImage=icon)
+def addVideo(label, url, icon=None, thumbnail=None, infoLabels={}, isFolder=False):
+    li = xbmcgui.ListItem(label, iconImage=icon, thumbnailImage=thumbnail)
     li.setInfo('video', infoLabels)
     li.setArt({'banner': icon, 'fanart': icon})
     li.setProperty('IsPlayable', str(isFolder))
@@ -113,7 +204,7 @@ def listTVShows(path, channel_id=None, letter=None, page=0):
 
         url = common.build_url(parameter)
         
-        addDir(title, url, iconImage, infoLabels)
+        addDir(title, url, iconImage, iconImage, infoLabels)
         xbmcplugin.setContent(addon_handle, 'tvshows')
 
 #    if response.get('totalCount') > ((page + 1) * videos_per_page):
@@ -136,7 +227,7 @@ def getTVShow(channel_id, tvshow_id, iconImage, infoLabels):
 
         url = common.build_url(parameter)
 
-        addDir(tvShowDir, url, iconImage, ast.literal_eval(infoLabels))
+        addDir(tvShowDir, url, iconImage, iconImage, ast.literal_eval(infoLabels))
         xbmcplugin.setContent(addon_handle, 'tvshows')
 
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
@@ -164,7 +255,7 @@ def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
             
         url = common.build_url({'action': 'playVideo', 'video_id': item.get('id'), 'video_url': item.get('links')[0].get('url') if len(item.get('links')) > 0 else None, 'infoLabels': infoLabels})
         
-        addVideo(title, url, iconImage, infoLabels, False)
+        addVideo(title, url, iconImage, iconImage, infoLabels)
         xbmcplugin.setContent(addon_handle, 'episode')
 
     if response.get('totalCount') > ((page + 1) * videos_per_page):
@@ -186,9 +277,14 @@ def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
 def getInfoLabel(item_data, item_type, channel_id):
     info = {}
 
-    info['title'] = item_data.get('titles').get('default') if item_data.get('titles').get('default').find('Episode') == -1 else item_data.get('titles').get('default')[item_data.get('titles').get('default').find(':') + 1:]
+    if item_type != 'live':
+        info['title'] = item_data.get('titles').get('default') if item_data.get('titles', '') != '' and item_data.get('titles').get('default', '').find('Episode') == -1 else item_data.get('titles').get('default')[item_data.get('titles').get('default').find(':') + 1:]
+    else:
+        info['title'] = item_data.get('title') if item_data.get('title') != None else item_data.get('tvShow').get('title')
     if item_data.get('shortDescriptions', {}).get('default', '') != '':
         info['plot'] = cleanhtml(item_data.get('shortDescriptions').get('default'))
+    elif item_data.get('description', '') != '':
+        info['plot'] = item_data.get('description')
     if item_data.get('duration', 0) > 0:
         info['duration'] = item_data.get('duration') / 1000
     if item_data.get('productionYear', 0) > 0 and item_data.get('productionYear') > 1901:
@@ -201,6 +297,8 @@ def getInfoLabel(item_data, item_type, channel_id):
     if len(item_data.get('tvShow', {})) > 0:
         if item_data.get('tvShow', {}).get('titles', {}).get('default', '') != '':
             info['tvshowtitle'] =  item_data.get('tvShow', {}).get('titles', {}).get('default', '')
+        elif item_data.get('tvShow', {}).get('title', '') != '':
+            info['tvshowtitle'] = item_data.get('tvShow').get('title')
         
     if len(item_data.get('season', {})) > 0:
         if item_data.get('season').get('number', 0) > 0:
@@ -223,10 +321,10 @@ def getInfoLabel(item_data, item_type, channel_id):
             info['aired'] = datetime.fromtimestamp(dates[0].get('date')).strftime("%Y-%m-%d")
             info['dateadded'] = datetime.fromtimestamp(dates[0].get('date')).strftime("%Y-%m-%d %H:%M:%S")
 
-    if item_data.get('titles').get('default').find('Staffel') > -1 and info.get('season', None) == None:
+    if item_data.get('titles', '') != '' and item_data.get('titles').get('default').find('Staffel') > -1 and info.get('season', None) == None:
         info['season'] = re.compile('Staffel ([0-9]+)', re.DOTALL).findall(item_data.get('titles').get('default'))[0]  
     
-    if item_data.get('titles').get('default').find('Episode') > -1 and info.get('episode', None) == None:
+    if item_data.get('titles', '') != '' and item_data.get('titles').get('default').find('Episode') > -1 and info.get('episode', None) == None:
         info['episode'] = re.compile('Episode ([0-9]+)', re.DOTALL).findall(item_data.get('titles').get('default'))[0]    
 
     if item_type == 'tvshow':
