@@ -118,7 +118,7 @@ def rootDir():
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
 
 def showLiveChannels():
-    selection = '{totalCount,data{title,tvShow{title},season{number},episode{number},images(subType:"cover"){url,subType},tvChannelName,description,productionYear}}'
+    selection = '{totalCount,data{title,tvShow{title},season{number},episode{number},images(subType:"cover"){url,subType},tvChannelName,description,productionYear,startTime,endTime}}'
     url = serviceUrl + '/epg/now?selection=' + selection
 
     response = seventv.getUrl(url).get('response')
@@ -138,6 +138,7 @@ def showLiveChannels():
             title = '[COLOR orange][' + channel.get('label') + '][/COLOR] ' + str(title)
             addVideo(title, url, icon_path + channel.get('icon'), thumbnailImage, infoLabels)
 
+    xbmcplugin.setContent(addon_handle, 'files')
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
 
 def showChannels():
@@ -293,6 +294,8 @@ def getInfoLabel(item_data, item_type, channel_id):
         info['date'] = datetime.fromtimestamp(item_data.get('createdAt')).strftime("%d.%m.%Y")
     if item_data.get('modifiedAt', 0) > 0:
         info['date'] = datetime.fromtimestamp(item_data.get('modifiedAt')).strftime("%d.%m.%Y")
+    if item_data.get('startTime', 0) > 0 and item_data.get('endTime', 0) > 0:
+        info['plot'] = datetime.fromtimestamp(item_data.get('startTime')).strftime("%H:%M") + ' - ' + datetime.fromtimestamp(item_data.get('endTime')).strftime("%H:%M") + "\n\n" + info['plot']
 
     if len(item_data.get('tvShow', {})) > 0:
         if item_data.get('tvShow', {}).get('titles', {}).get('default', '') != '':
