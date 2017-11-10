@@ -124,6 +124,7 @@ def showLiveChannels():
     response = seventv.getUrl(url).get('response')
     content = response.get('data')
 
+    addDir('Aktualisieren', 'xbmc.executebuiltin("XBMC.Container.Refresh")', infoLabels={'plot': 'Aktualisieren'})
     for channel in channels:
         infoLabels = {}
         thumbnailImage = None
