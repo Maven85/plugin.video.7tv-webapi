@@ -128,14 +128,14 @@ def showLiveChannels():
     for channel in channels:
         infoLabels = {}
         thumbnailImage = None
-        if channel.get('property_name', '') != '':
+        if channel.get('property_name', None) is not None:
             for channel_content in content:
                 if channel_content.get('tvChannelName').lower() == channel.get('label').lower():
                     infoLabels = getInfoLabel(channel_content, 'live', channel.get('id'))
                     thumbnailImage = getIcon(channel_content)
 
             url = common.build_url({'action': 'playLiveTV', 'property_name': channel.get('property_name'), 'client_location': channel.get('client_location'), 'access_token': channel.get('access_token'), 'client_token': channel.get('client_token'), 'callback': channel.get('callback'), 'infoLables': infoLabels})
-            title = infoLabels.get('title') if infoLabels.get('tvshowtitle', '') == '' else '[COLOR blue]' + infoLabels.get('tvshowtitle') +  ' |[/COLOR] ' + infoLabels.get('title')
+            title = infoLabels.get('title') if infoLabels.get('tvshowtitle', None) is None or infoLabels.get('tvshowtitle') == infoLabels.get('title') else '[COLOR blue]' + infoLabels.get('tvshowtitle') +  ' |[/COLOR] ' + infoLabels.get('title')
             title = '[COLOR orange][' + channel.get('label') + '][/COLOR] ' + str(title)
             addVideo(title, url, icon_path + channel.get('icon'), thumbnailImage, infoLabels)
 
@@ -280,55 +280,55 @@ def getInfoLabel(item_data, item_type, channel_id):
     info = {}
 
     if item_type != 'live':
-        info['title'] = item_data.get('titles').get('default') if item_data.get('titles', '') != '' and item_data.get('titles').get('default', '').find('Episode') == -1 else item_data.get('titles').get('default')[item_data.get('titles').get('default').find(':') + 1:]
+        info['title'] = item_data.get('titles').get('default') if item_data.get('titles', None) is not None and item_data.get('titles').get('default', '').find('Episode') == -1 else item_data.get('titles').get('default')[item_data.get('titles').get('default').find(':') + 1:]
+        if item_data.get('shortDescriptions', {}).get('default', None) is not None:
+            info['plot'] = cleanhtml(item_data.get('shortDescriptions').get('default'))
     else:
-        info['title'] = item_data.get('title') if item_data.get('title') != None else item_data.get('tvShow').get('title')
-    if item_data.get('shortDescriptions', {}).get('default', '') != '':
-        info['plot'] = cleanhtml(item_data.get('shortDescriptions').get('default'))
-    elif item_data.get('description', '') != '':
-        info['plot'] = item_data.get('description')
-    if item_data.get('duration', 0) > 0:
+        info['title'] = item_data.get('title') if item_data.get('title') is not None else item_data.get('tvShow').get('title')
+        if item_data.get('description', None) is not None:
+            info['plot'] = item_data.get('description')
+
+    if item_data.get('duration', None) is not None and item_data.get('duration') > 0:
         info['duration'] = item_data.get('duration') / 1000
-    if item_data.get('productionYear', 0) > 0 and item_data.get('productionYear') > 1901:
+    if item_data.get('productionYear', None) is not None and  item_data.get('productionYear') > 0 and item_data.get('productionYear') > 1901:
         info['year'] = item_data.get('productionYear')
-    if item_data.get('createdAt', 0) > 0:
+    if item_data.get('createdAt', None) is not None and item_data.get('createdAt') > 0:
         info['date'] = datetime.fromtimestamp(item_data.get('createdAt')).strftime("%d.%m.%Y")
-    if item_data.get('modifiedAt', 0) > 0:
+    if item_data.get('modifiedAt', None) is not None and item_data.get('modifiedAt') > 0:
         info['date'] = datetime.fromtimestamp(item_data.get('modifiedAt')).strftime("%d.%m.%Y")
-    if item_data.get('startTime', 0) > 0 and item_data.get('endTime', 0) > 0:
-        info['plot'] = datetime.fromtimestamp(item_data.get('startTime')).strftime("%H:%M") + ' - ' + datetime.fromtimestamp(item_data.get('endTime')).strftime("%H:%M") + "\n\n" + info['plot']
+    if item_data.get('startTime', None) is not None and item_data.get('startTime') > 0 and item_data.get('endTime', None) is not None and item_data.get('endTime') > 0:
+        info['plot'] = datetime.fromtimestamp(item_data.get('startTime')).strftime("%H:%M") + ' - ' + datetime.fromtimestamp(item_data.get('endTime')).strftime("%H:%M") + ("\n\n" + info.get('plot') if info.get('plot', None) is not None else '')
 
     if len(item_data.get('tvShow', {})) > 0:
-        if item_data.get('tvShow', {}).get('titles', {}).get('default', '') != '':
-            info['tvshowtitle'] =  item_data.get('tvShow', {}).get('titles', {}).get('default', '')
-        elif item_data.get('tvShow', {}).get('title', '') != '':
+        if item_data.get('tvShow', {}).get('titles', {}).get('default', None) is not None:
+            info['tvshowtitle'] =  item_data.get('tvShow').get('titles').get('default')
+        elif item_data.get('tvShow', {}).get('title', None) is not None:
             info['tvshowtitle'] = item_data.get('tvShow').get('title')
         
-    if len(item_data.get('season', {})) > 0:
-        if item_data.get('season').get('number', 0) > 0:
-            info['season'] = item_data.get('season').get('number')
+    if len(item_data.get('season', {})) > 0 and item_data.get('season').get('number', None) is not None and item_data.get('season').get('number') > 0:
+        info['season'] = item_data.get('season').get('number')
             
     if len(item_data.get('episode', {})) > 0:
         #info['title'] = item_data.get('episode').get('titles').get('default') if item_data.get('episode').get('titles').get('default').find('Folge') == -1 else info['title']
-        if item_data.get('episode').get('number', 0) > 0:
+        if item_data.get('episode').get('number', None) is not None and item_data.get('episode').get('number') > 0:
             info['episode'] = item_data.get('episode').get('number')
         elif 'season' in info:
             del info['season']
-        if item_data.get('episode').get('metaDescriptions', {}).get('default', '') != '':
+        if item_data.get('episode').get('metaDescriptions', {}).get('default', None) is not None and item_data.get('episode').get('metaDescriptions', {}).get('default', '') != '':
             info['plot'] = item_data.get('episode').get('metaDescriptions').get('default')
-        if item_data.get('episode').get('productionYear', 0) > 0 and item_data.get('episode').get('productionYear') > 1901:
+        if item_data.get('episode').get('productionYear', None) is not None and item_data.get('episode').get('productionYear') > 0 and item_data.get('episode').get('productionYear') > 1901:
             info['year'] = item_data.get('episode').get('productionYear')
-        if item_data.get('episode').get('createdAt', 0) > 0:
+        if item_data.get('episode').get('createdAt', None) is not None and item_data.get('episode').get('createdAt') > 0:
             info['date'] = datetime.fromtimestamp(item_data.get('episode').get('createdAt')).strftime("%d.%m.%Y")  
-        if len(item_data.get('episode').get('airdates', [])) > 0:
+        if len(item_data.get('episode').get('airdates', {})) > 0:
             dates = [date for date in item_data.get('episode').get('airdates') if date.get('brand') == channel_id] if len([date for date in item_data.get('episode').get('airdates') if date.get('brand') == channel_id]) > 0 else item_data.get('episode').get('airdates')
             info['aired'] = datetime.fromtimestamp(dates[0].get('date')).strftime("%Y-%m-%d")
             info['dateadded'] = datetime.fromtimestamp(dates[0].get('date')).strftime("%Y-%m-%d %H:%M:%S")
 
-    if item_data.get('titles', '') != '' and item_data.get('titles').get('default').find('Staffel') > -1 and info.get('season', None) == None:
+    if item_data.get('titles', None) is not None and item_data.get('titles').get('default').find('Staffel') > -1 and info.get('season', None) is None:
         info['season'] = re.compile('Staffel ([0-9]+)', re.DOTALL).findall(item_data.get('titles').get('default'))[0]  
     
-    if item_data.get('titles', '') != '' and item_data.get('titles').get('default').find('Episode') > -1 and info.get('episode', None) == None:
+    if item_data.get('titles', None) is not None and item_data.get('titles').get('default').find('Episode') > -1 and info.get('episode', None) is None:
         info['episode'] = re.compile('Episode ([0-9]+)', re.DOTALL).findall(item_data.get('titles').get('default'))[0]    
 
     if item_type == 'tvshow':
@@ -348,4 +348,4 @@ def cleanhtml(raw_html):
 
 
 def getIcon(item):
-    return item.get('images')[0].get('url', '') + img_profile + img_sizes[4] if len(item.get('images')) > 0 else ''
+    return item.get('images')[0].get('url', '') + img_profile + img_sizes[4] if len(item.get('images', {})) > 0 else None
