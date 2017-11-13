@@ -9,8 +9,8 @@
 		<provides>video</provides>
 	</extension>
 	<extension point="xbmc.addon.metadata">
-		<summary lang="en">ProSieben, Sat.1, Kabel 1 and Sixx media library</summary>
-		<summary lang="de">Mediathek für ProSieben, Sat.1, Kabel 1 and Sixx</summary>
+		<summary lang="en">ProSieben, SAT.1, kabel eins, Sixx, ProSiebenMaxx, SAT.1 Gold, kabel eins Doku, DMAX and TLC media library</summary>
+		<summary lang="de">Mediathek für ProSieben, SAT.1, kabel eins, Sixx, ProSiebenMaxx, SAT.1 Gold, kabel eins Doku, DMAX und TLC</summary>
 		<description lang="en">Experience with 7TV a majority of shipments of ProSieben, SAT.1, kabel eins, Sixx, ProSiebenMaxx, SAT.1 Gold, kabel eins Doku, DMAX and TLC directly after the TV broadcast for free and for at least 7 days in full length - and the round-the-clock!</description>
 		<description lang="de">Erleben Sie mit 7TV einen Großteil der Sendungen von ProSieben, SAT.1, kabel eins, Sixx, ProSiebenMaxx, SAT.1 Gold, kabel eins Doku, DMAX und TLC direkt nach der TV-Ausstrahlung kostenlos und für mindestens 7 Tage in voller Länge – und das rund um die Uhr!</description>
 		<disclaimer lang="en"></disclaimer>
