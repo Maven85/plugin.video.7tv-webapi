@@ -1,4 +1,6 @@
-# coding: utf8
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import sys
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 import re
@@ -345,7 +347,6 @@ def cleanhtml(raw_html):
     cleanr = re.compile('<.*?>')
     cleantext = re.sub(cleanr, '', raw_html)
     return cleantext
-
 
 def getIcon(item):
     return item.get('images')[0].get('url', '') + img_profile + img_sizes[4] if len(item.get('images', {})) > 0 else None

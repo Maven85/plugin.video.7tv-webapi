@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# coding: utf8
+
 import sys
 import json
 import urllib, urllib2
@@ -8,6 +8,7 @@ import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 import ast
 import re
 from inputstreamhelper import Helper
+from hashlib import sha1
 
 addon = xbmcaddon.Addon()
 addon_handle = int(sys.argv[1])
@@ -19,8 +20,6 @@ if not apiKey:
 userAgent = 'User-Agent=Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'
 
 def playVideo(video_id, client_location, source_id=None, infoLabels=None):
-    from hashlib import sha1
-
     # Inputstream and DRM
     helper = Helper(protocol='mpd', drm='widevine')
     isInputstream = helper.check_inputstream()
@@ -107,12 +106,11 @@ def playVideo(video_id, client_location, source_id=None, infoLabels=None):
     xbmcplugin.setResolvedUrl(addon_handle, True, li)
 
 def playLiveTV(property_name, client_location, access_token, client_token, infoLabels={}):
-    from hashlib import sha1
-
     # Inputstream and DRM
     helper = Helper(protocol='mpd', drm='widevine')
-    isInputstream = helper.check_inputstream()
-    
+    if helper.check_inputstream() == False:
+        return
+
     url = 'https://vas-live-mdp.glomex.com/live/1.0/getprotocols?%s' % (urllib.urlencode({
         'access_token': access_token,
         'client_location': client_location,
@@ -162,7 +160,20 @@ def playLiveTV(property_name, client_location, access_token, client_token, infoL
 
 
     xbmcplugin.setResolvedUrl(addon_handle, True, li)
-    
+
+    counter = 0
+    activePlayers = []
+    while len(activePlayers) == 0:
+        activePlayers = json.loads(xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}')).get('result', [])
+        xbmc.sleep(1000)
+        counter += 1
+        if counter >= 30:
+            return
+
+    while xbmc.Player().isPlaying():
+        xbmc.sleep(1000)
+
+    xbmc.executebuiltin("XBMC.Container.Refresh")
     
 def getUrl(url, data="x", header=""):
     xbmc.log("Get Url: " + url)

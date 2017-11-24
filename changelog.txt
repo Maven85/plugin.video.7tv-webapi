@@ -1,3 +1,5 @@
+1.0.3
+- refresh livetv section after stream is stopped
 1.0.2
 - add livetv
 1.0.1
