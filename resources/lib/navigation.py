@@ -138,7 +138,7 @@ def showLiveChannels():
 
             url = common.build_url({'action': 'playLiveTV', 'property_name': channel.get('property_name'), 'client_location': channel.get('client_location'), 'access_token': channel.get('access_token'), 'client_token': channel.get('client_token'), 'callback': channel.get('callback'), 'infoLables': infoLabels})
             title = infoLabels.get('title') if infoLabels.get('tvshowtitle', None) is None or infoLabels.get('tvshowtitle') == infoLabels.get('title') else '[COLOR blue]' + infoLabels.get('tvshowtitle') +  ' |[/COLOR] ' + infoLabels.get('title')
-            title = '[COLOR orange][' + channel.get('label') + '][/COLOR] ' + str(title)
+            title = '[COLOR orange][' + channel.get('label') + '][/COLOR] ' + title
             addVideo(title, url, icon_path + channel.get('icon'), thumbnailImage, infoLabels)
 
     xbmcplugin.setContent(addon_handle, 'files')
