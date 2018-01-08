@@ -12,7 +12,7 @@ params = dict(urlparse.parse_qsl(sys.argv[2][1:]))
 # Router for all plugin actions
 if 'action' in params:
     print params
-    
+
     if params['action'] == 'livechannels':
         nav.showLiveChannels()
     elif params['action'] == 'recenthighlights':

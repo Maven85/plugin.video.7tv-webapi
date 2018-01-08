@@ -12,7 +12,7 @@ import resources.lib.common as common
 
 addon = xbmcaddon.Addon()
 addon_handle = int(sys.argv[1])
-icon_path = xbmc.translatePath(addon.getAddonInfo('path') +'/resources/media/channels/').decode('utf-8')
+icon_path = xbmc.translatePath(addon.getAddonInfo('path') + '/resources/media/channels/').decode('utf-8')
 
 serviceUrl = 'https://mobileapi.prosiebensat1.com/7tv/web/v1'
 
@@ -25,7 +25,7 @@ rootDirs = [
             , {'label': 'Highlights', 'action': 'recenthighlights', 'path': '/recent/highlights'}
             , {'label': 'Beliebte Sendungen', 'action': 'recenttvshows', 'path': '/recent/tvshows'}
             , {'label': 'Ganze Folgen', 'action': 'recentvideos', 'path': '/recent/videos'}
-            , {'label': 'Mediatheken', 'action': 'libraries'} 
+            , {'label': 'Mediatheken', 'action': 'libraries'}
            ]
 
 channels = [
@@ -39,14 +39,14 @@ channels = [
                 , 'icon': 'pro7.png'
                 , 'property_name': 'prosieben-de-24x7'
                 , 'client_location': 'https://www.prosieben.de/livestream'
-                , 'access_token': 'prosieben' 
+                , 'access_token': 'prosieben'
                 , 'client_token':  '01b353c155a9006e80ae7c5ed3eb1c09c0a6995556'
               }
             , {
                   'id': '2'
                 , 'label': 'SAT.1'
                 , 'icon': 'sat1.png'
-                , 'property_name': 'sat1-de-24x7' 
+                , 'property_name': 'sat1-de-24x7'
                 , 'client_location': 'https://www.sat1.de/livestream'
                 , 'access_token': 'sat1'
                 , 'client_token':  '01e491d866b37341734d691a8acb48af37a77bf26f'
@@ -55,7 +55,7 @@ channels = [
                   'id': '3'
                 , 'label': 'kabel eins'
                 , 'icon': 'kabel1.png'
-                , 'property_name': 'kabeleins-de-24x7' 
+                , 'property_name': 'kabeleins-de-24x7'
                 , 'client_location': 'https://www.kabeleins.de/livestream'
                 , 'access_token': 'kabeleins'
                 , 'client_token':  '014c87bfe2ce4aebf6219ed699602a1f152194e4cd'
@@ -64,7 +64,7 @@ channels = [
                   'id': '4'
                 , 'label': 'Sixx'
                 , 'icon': 'sixx.png'
-                , 'property_name': 'sixx-de-24x7' 
+                , 'property_name': 'sixx-de-24x7'
                 , 'client_location': 'https://www.sixx.de/livestream'
                 , 'access_token': 'sixx'
                 , 'client_token':  '017705703133050842d3ca11fc20a6fc205b8b4025'
@@ -73,7 +73,7 @@ channels = [
                   'id': '5'
                 , 'label': 'ProSiebenMaxx'
                 , 'icon': 'prosiebenmaxx.png'
-                , 'property_name' : 'prosiebenmaxx-de-24x7' 
+                , 'property_name' : 'prosiebenmaxx-de-24x7'
                 , 'client_location': 'https://www.prosiebenmaxx.de/livestream'
                 , 'access_token' : 'prosiebenmaxx'
                 , 'client_token':  '01963623e9b364805dbe12f113dba1c4914c24d189'
@@ -82,16 +82,16 @@ channels = [
                   'id': '6'
                 , 'label': 'SAT.1 Gold'
                 , 'icon': 'sat1gold.png'
-                , 'property_name' : 'sat1gold-de-24x7' 
+                , 'property_name' : 'sat1gold-de-24x7'
                 , 'client_location': 'https://www.sat1gold.de/livestream'
                 , 'access_token' : 'sat1gold'
                 , 'client_token': '01107e433196365e4d54d0f90bdf1070cd2df5e190'
-              }                
+              }
             , {
                   'id': '7'
                 , 'label': 'kabel eins Doku'
                 , 'icon': 'kabeleinsdoku.png'
-                , 'property_name' : 'kabeleinsdoku-de-24x7' 
+                , 'property_name' : 'kabeleinsdoku-de-24x7'
                 , 'client_location': 'https://www.kabeleinsdoku.de/livestream'
                 , 'access_token' : 'kabeleinsdoku'
                 , 'client_token': '01ea6d32ff5de5d50d0290dbdf819f9b856bcfd44a'
@@ -111,13 +111,15 @@ channels = [
 letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '#']
 
 tvShowDirs = ['Clips', 'Ganze Folgen']
-        
+
+
 def rootDir():
     for dir in rootDirs:
         url = common.build_url({'action': dir.get('action'), 'path': dir.get('path')})
         addDir(dir.get('label'), url)
 
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
+
 
 def showLiveChannels():
     selection = '{totalCount,data{title,tvShow{title},season{number},episode{number},images(subType:"cover"){url,subType},tvChannelName,description,productionYear,startTime,endTime}}'
@@ -126,7 +128,7 @@ def showLiveChannels():
     response = seventv.getUrl(url).get('response')
     content = response.get('data')
 
-    addDir('Aktualisieren', 'xbmc.executebuiltin("XBMC.Container.Refresh")', infoLabels={'plot': 'Aktualisieren'})
+    addDir('Aktualisieren', 'xbmc.executebuiltin("container.refresh")', infoLabels={'plot': 'Aktualisieren'})
     for channel in channels:
         infoLabels = {}
         thumbnailImage = None
@@ -137,12 +139,13 @@ def showLiveChannels():
                     thumbnailImage = getIcon(channel_content)
 
             url = common.build_url({'action': 'playLiveTV', 'property_name': channel.get('property_name'), 'client_location': channel.get('client_location'), 'access_token': channel.get('access_token'), 'client_token': channel.get('client_token'), 'callback': channel.get('callback'), 'infoLables': infoLabels})
-            title = infoLabels.get('title') if infoLabels.get('tvshowtitle', None) is None or infoLabels.get('tvshowtitle') == infoLabels.get('title') else '[COLOR blue]' + infoLabels.get('tvshowtitle') +  ' |[/COLOR] ' + infoLabels.get('title')
+            title = infoLabels.get('title') if infoLabels.get('tvshowtitle', None) is None or infoLabels.get('tvshowtitle') == infoLabels.get('title') else '[COLOR blue]' + infoLabels.get('tvshowtitle') + ' |[/COLOR] ' + infoLabels.get('title')
             title = '[COLOR orange][' + channel.get('label') + '][/COLOR] ' + title
             addVideo(title, url, icon_path + channel.get('icon'), thumbnailImage, infoLabels)
 
     xbmcplugin.setContent(addon_handle, 'files')
-    xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
+    xbmcplugin.endOfDirectory(addon_handle)
+
 
 def showChannels():
     for channel in channels:
@@ -154,9 +157,11 @@ def showChannels():
         addDir(channel.get('label'), url, icon_path + channel.get('icon'))
 
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
-    
+
+
 def addDir(label, url, icon=None, thumbnail=None, infoLabels={}):
     addVideo(label, url, icon, thumbnail, infoLabels, True)
+
 
 def addVideo(label, url, icon=None, thumbnail=None, infoLabels={}, isFolder=False):
     li = xbmcgui.ListItem(label, iconImage=icon, thumbnailImage=thumbnail)
@@ -165,7 +170,8 @@ def addVideo(label, url, icon=None, thumbnail=None, infoLabels={}, isFolder=Fals
     li.setProperty('IsPlayable', str(isFolder))
 
     xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li, isFolder=isFolder)
-    
+
+
 def listLetters(channel_id):
     for letter in letters:
         parameter = {'action': 'listTVShows', 'path': '/tvshows', 'letter': letter if letter != '#' else '\d', 'page': 0}
@@ -174,8 +180,9 @@ def listLetters(channel_id):
 
         url = common.build_url(parameter)
         addDir(letter.title(), url)
-        
+
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
+
 
 def listTVShows(path, channel_id=None, letter=None, page=0):
     selection = '{totalCount,data{id,titles{default},images(subType:"Teaser"){url,subType},shortDescriptions{default}}}'
@@ -183,7 +190,7 @@ def listTVShows(path, channel_id=None, letter=None, page=0):
     url = serviceUrl + path + '?selection=' + selection + '&sortBy=titles.default&sortAscending=true' + '&limit=5000'
 
     if channel_id is not None:
-        url += '&channelId=' + channel_id    
+        url += '&channelId=' + channel_id
 #    if letter is not None:
 #        url += '&search=(^' + letter + ')'
 
@@ -201,13 +208,13 @@ def listTVShows(path, channel_id=None, letter=None, page=0):
 
         iconImage = getIcon(item)
         infoLabels = getInfoLabel(item, 'tvshow', channel_id)
-        
+
         parameter = {'action': 'getTVShow', 'tvshow_id': item.get('id'), 'iconImage': iconImage, 'infoLabels': infoLabels}
         if channel_id is not None:
             parameter['channel_id'] = channel_id
 
         url = common.build_url(parameter)
-        
+
         addDir(title, url, iconImage, iconImage, infoLabels)
         xbmcplugin.setContent(addon_handle, 'tvshows')
 
@@ -223,6 +230,7 @@ def listTVShows(path, channel_id=None, letter=None, page=0):
 
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
 
+
 def getTVShow(channel_id, tvshow_id, iconImage, infoLabels):
     for tvShowDir in tvShowDirs:
         parameter = {'action': 'listVideos', 'path': '/videos', 'tvshow_id': tvshow_id, 'video_type': tvShowDir, 'page': 0}
@@ -236,12 +244,13 @@ def getTVShow(channel_id, tvshow_id, iconImage, infoLabels):
 
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
 
+
 def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
     selection = '{totalCount,data{id,type,titles{default},images(subType:"Teaser"){url,subType},shortDescriptions{default},links,duration, subType,productionYear,createdAt,tvShow{titles{default}},season{number},episode{number,titles{default},metaDescriptions{default},productionYear,createdAt,modifiedAt,airdates}}}'
     url = serviceUrl + path + '?selection=' + selection + '&limit=' + str(videos_per_page) + '&skip=' + str(page * videos_per_page) + '&sortBy=airdate&sortAscending=false'
-    
+
     if channel_id is not None:
-        url += '&channelId=' + channel_id 
+        url += '&channelId=' + channel_id
     if tvshow_id is not None:
         url += '&tvShowId=' + tvshow_id
     if video_type == tvShowDirs[0]:
@@ -254,11 +263,11 @@ def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
 
     for item in content:
         title = item.get('titles').get('default') if not tvshow_id == None else '[COLOR blue]' + item.get('tvShow', {}).get('titles', {}).get('default', '') + ' |[/COLOR] ' + item.get('titles').get('default')
-        iconImage = getIcon(item) 
+        iconImage = getIcon(item)
         infoLabels = getInfoLabel(item, 'video', channel_id)
-            
+
         url = common.build_url({'action': 'playVideo', 'video_id': item.get('id'), 'video_url': item.get('links')[0].get('url') if len(item.get('links')) > 0 else None, 'infoLabels': infoLabels})
-        
+
         addVideo(title, url, iconImage, iconImage, infoLabels)
         xbmcplugin.setContent(addon_handle, 'episode')
 
@@ -277,6 +286,7 @@ def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
         addDir('Nächste Seite', url)
 
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
+
 
 def getInfoLabel(item_data, item_type, channel_id):
     info = {}
@@ -303,15 +313,15 @@ def getInfoLabel(item_data, item_type, channel_id):
 
     if len(item_data.get('tvShow', {})) > 0:
         if item_data.get('tvShow', {}).get('titles', {}).get('default', None) is not None:
-            info['tvshowtitle'] =  item_data.get('tvShow').get('titles').get('default')
+            info['tvshowtitle'] = item_data.get('tvShow').get('titles').get('default')
         elif item_data.get('tvShow', {}).get('title', None) is not None:
             info['tvshowtitle'] = item_data.get('tvShow').get('title')
-        
+
     if len(item_data.get('season', {})) > 0 and item_data.get('season').get('number', None) is not None and item_data.get('season').get('number') > 0:
         info['season'] = item_data.get('season').get('number')
-            
+
     if len(item_data.get('episode', {})) > 0:
-        #info['title'] = item_data.get('episode').get('titles').get('default') if item_data.get('episode').get('titles').get('default').find('Folge') == -1 else info['title']
+        # info['title'] = item_data.get('episode').get('titles').get('default') if item_data.get('episode').get('titles').get('default').find('Folge') == -1 else info['title']
         if item_data.get('episode').get('number', None) is not None and item_data.get('episode').get('number') > 0:
             info['episode'] = item_data.get('episode').get('number')
         elif 'season' in info:
@@ -321,17 +331,17 @@ def getInfoLabel(item_data, item_type, channel_id):
         if item_data.get('episode').get('productionYear', None) is not None and item_data.get('episode').get('productionYear') > 0 and item_data.get('episode').get('productionYear') > 1901:
             info['year'] = item_data.get('episode').get('productionYear')
         if item_data.get('episode').get('createdAt', None) is not None and item_data.get('episode').get('createdAt') > 0:
-            info['date'] = datetime.fromtimestamp(item_data.get('episode').get('createdAt')).strftime("%d.%m.%Y")  
+            info['date'] = datetime.fromtimestamp(item_data.get('episode').get('createdAt')).strftime("%d.%m.%Y")
         if len(item_data.get('episode').get('airdates', {})) > 0:
             dates = [date for date in item_data.get('episode').get('airdates') if date.get('brand') == channel_id] if len([date for date in item_data.get('episode').get('airdates') if date.get('brand') == channel_id]) > 0 else item_data.get('episode').get('airdates')
             info['aired'] = datetime.fromtimestamp(dates[0].get('date')).strftime("%Y-%m-%d")
             info['dateadded'] = datetime.fromtimestamp(dates[0].get('date')).strftime("%Y-%m-%d %H:%M:%S")
 
     if item_data.get('titles', None) is not None and item_data.get('titles').get('default').find('Staffel') > -1 and info.get('season', None) is None:
-        info['season'] = re.compile('Staffel ([0-9]+)', re.DOTALL).findall(item_data.get('titles').get('default'))[0]  
-    
+        info['season'] = re.compile('Staffel ([0-9]+)', re.DOTALL).findall(item_data.get('titles').get('default'))[0]
+
     if item_data.get('titles', None) is not None and item_data.get('titles').get('default').find('Episode') > -1 and info.get('episode', None) is None:
-        info['episode'] = re.compile('Episode ([0-9]+)', re.DOTALL).findall(item_data.get('titles').get('default'))[0]    
+        info['episode'] = re.compile('Episode ([0-9]+)', re.DOTALL).findall(item_data.get('titles').get('default'))[0]
 
     if item_type == 'tvshow':
         info['tvshowtitle'] = info['title']
@@ -343,10 +353,12 @@ def getInfoLabel(item_data, item_type, channel_id):
 
     return info
 
+
 def cleanhtml(raw_html):
     cleanr = re.compile('<.*?>')
     cleantext = re.sub(cleanr, '', raw_html)
     return cleantext
+
 
 def getIcon(item):
     return item.get('images')[0].get('url', '') + img_profile + img_sizes[4] if len(item.get('images', {})) > 0 else None
