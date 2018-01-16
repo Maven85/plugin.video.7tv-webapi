@@ -96,11 +96,8 @@ def playVideo(video_id, client_location, source_id=None, infoLabels=None):
     except:
         pass
 
-    if infoLabels is not None:
-        try:
-            li.setInfo('video', ast.literal_eval(infoLabels))
-        except:
-            pass
+    if infoLabels is not None and len(infoLabels) > 0:
+        li.setInfo('video', infoLabels)
 
     xbmcplugin.setResolvedUrl(addon_handle, True, li)
 
@@ -150,10 +147,7 @@ def playLiveTV(property_name, client_location, access_token, client_token, infoL
         pass
 
     if infoLabels is not None and len(infoLabels) > 0:
-        try:
-            li.setInfo('video', ast.literal_eval(infoLabels))
-        except:
-            pass
+        li.setInfo('video', ast.literal_eval(infoLabels))
 
     xbmcplugin.setResolvedUrl(addon_handle, True, li)
 

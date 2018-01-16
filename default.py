@@ -2,16 +2,23 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import urlparse
+import urllib
+import base64
+import xbmc
+import json
 
 import resources.lib.seventv as seventv
 import resources.lib.navigation as nav
 
-params = dict(urlparse.parse_qsl(sys.argv[2][1:]))
+params = urllib.unquote(sys.argv[2][1:])
+if len(params) > 0:
+    if len(params) % 4 != 0:
+        params += '=' * (4 - len(params) % 4)
+    params = dict(json.loads(base64.urlsafe_b64decode(params)))
 
 # Router for all plugin actions
 if 'action' in params:
-    print params
+    xbmc.log('params' + str(params))
 
     if params['action'] == 'livechannels':
         nav.showLiveChannels()
