@@ -4,11 +4,10 @@
 import sys
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 import re
-import ast
 from datetime import datetime
 
 import seventv
-import resources.lib.common as common
+import common
 
 addon = xbmcaddon.Addon()
 addon_handle = int(sys.argv[1])
@@ -164,9 +163,9 @@ def addDir(label, url, icon=None, thumbnail=None, infoLabels={}):
 
 
 def addVideo(label, url, icon=None, thumbnail=None, infoLabels={}, isFolder=False):
-    li = xbmcgui.ListItem(label, iconImage=icon, thumbnailImage=thumbnail)
+    li = xbmcgui.ListItem(label)
     li.setInfo('video', infoLabels)
-    li.setArt({'banner': icon, 'fanart': icon})
+    li.setArt({'banner': icon, 'fanart': icon, 'icon': icon, 'thumb': thumbnail})
     li.setProperty('IsPlayable', str(isFolder))
 
     xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li, isFolder=isFolder)
@@ -239,7 +238,7 @@ def getTVShow(channel_id, tvshow_id, iconImage, infoLabels):
 
         url = common.build_url(parameter)
 
-        addDir(tvShowDir, url, iconImage, iconImage, ast.literal_eval(infoLabels))
+        addDir(tvShowDir, url, iconImage, iconImage, infoLabels)
         xbmcplugin.setContent(addon_handle, 'tvshows')
 
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
@@ -262,13 +261,16 @@ def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
     content = response.get('data')
 
     for item in content:
-        title = item.get('titles').get('default') if not tvshow_id == None else '[COLOR blue]' + item.get('tvShow', {}).get('titles', {}).get('default', '') + ' |[/COLOR] ' + item.get('titles').get('default')
         iconImage = getIcon(item)
         infoLabels = getInfoLabel(item, 'video', channel_id)
+        infoLabels['title'] = infoLabels['title'] if tvshow_id is not None else '[COLOR blue]' + item.get('tvShow', {}).get('titles', {}).get('default', '') + ' |[/COLOR] ' + item.get('titles').get('default')
+
+        if tvshow_id is not None and infoLabels.get('season', None) is not None and infoLabels.get('episode', None) is not None:
+            infoLabels['title'] = '{:02d}x{:02d}. {}'.format(infoLabels.get('season'), infoLabels.get('episode'), infoLabels.get('title'))
 
         url = common.build_url({'action': 'playVideo', 'video_id': item.get('id'), 'video_url': item.get('links')[0].get('url') if len(item.get('links')) > 0 else None, 'infoLabels': infoLabels})
 
-        addVideo(title, url, iconImage, iconImage, infoLabels)
+        addVideo(infoLabels.get('title'), url, iconImage, iconImage, infoLabels)
         xbmcplugin.setContent(addon_handle, 'episode')
 
     if response.get('totalCount') > ((page + 1) * videos_per_page):
@@ -337,10 +339,10 @@ def getInfoLabel(item_data, item_type, channel_id):
             info['aired'] = datetime.fromtimestamp(dates[0].get('date')).strftime("%Y-%m-%d")
             info['dateadded'] = datetime.fromtimestamp(dates[0].get('date')).strftime("%Y-%m-%d %H:%M:%S")
 
-    if item_data.get('titles', None) is not None and item_data.get('titles').get('default').find('Staffel') > -1 and info.get('season', None) is None:
+    if info.get('season', None) is None and item_data.get('titles', None) is not None and item_data.get('titles').get('default').find('Staffel') > -1:
         info['season'] = re.compile('Staffel ([0-9]+)', re.DOTALL).findall(item_data.get('titles').get('default'))[0]
 
-    if item_data.get('titles', None) is not None and item_data.get('titles').get('default').find('Episode') > -1 and info.get('episode', None) is None:
+    if info.get('episode', None) is None and item_data.get('titles', None) is not None and item_data.get('titles').get('default').find('Episode') > -1:
         info['episode'] = re.compile('Episode ([0-9]+)', re.DOTALL).findall(item_data.get('titles').get('default'))[0]
 
     if item_type == 'tvshow':
