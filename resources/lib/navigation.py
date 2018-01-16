@@ -287,6 +287,13 @@ def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
         url = common.build_url(parameter)
         addDir('Nächste Seite', url)
 
+    if tvshow_id is not None:
+        xbmcplugin.addSortMethod(addon_handle, sortMethod=xbmcplugin.SORT_METHOD_LABEL)
+        xbmcplugin.addSortMethod(addon_handle, sortMethod=xbmcplugin.SORT_METHOD_TITLE)
+        xbmcplugin.addSortMethod(addon_handle, sortMethod=xbmcplugin.SORT_METHOD_VIDEO_YEAR)
+        xbmcplugin.addSortMethod(addon_handle, sortMethod=xbmcplugin.SORT_METHOD_DURATION)
+        xbmcplugin.addSortMethod(addon_handle, sortMethod=xbmcplugin.SORT_METHOD_NONE)
+
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
 
 

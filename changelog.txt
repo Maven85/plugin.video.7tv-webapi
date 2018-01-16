@@ -1,7 +1,10 @@
+1.0.4
+- added sort methods for videos
+- added number of season and episode in episode's title
 1.0.3
 - refresh livetv section after stream is stopped
 1.0.2
-- add livetv
+- added livetv
 1.0.1
 - Paging only for displaying videos
 - Set infolabels for inputstream's listitem 
