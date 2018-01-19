@@ -140,10 +140,10 @@ def showLiveChannels():
             url = common.build_url({'action': 'playLiveTV', 'property_name': channel.get('property_name'), 'client_location': channel.get('client_location'), 'access_token': channel.get('access_token'), 'client_token': channel.get('client_token'), 'callback': channel.get('callback'), 'infoLables': infoLabels})
             title = infoLabels.get('title') if infoLabels.get('tvshowtitle', None) is None or infoLabels.get('tvshowtitle') == infoLabels.get('title') else '[COLOR blue]' + infoLabels.get('tvshowtitle') + ' |[/COLOR] ' + infoLabels.get('title')
             title = '[COLOR orange][' + channel.get('label') + '][/COLOR] ' + title
-            addVideo(title, url, icon_path + channel.get('icon'), thumbnailImage, infoLabels)
+            addFile(title, url, icon_path + channel.get('icon'), thumbnailImage, infoLabels)
 
     xbmcplugin.setContent(addon_handle, 'files')
-    xbmcplugin.endOfDirectory(addon_handle)
+    xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=False)
 
 
 def showChannels():
@@ -159,10 +159,10 @@ def showChannels():
 
 
 def addDir(label, url, icon=None, thumbnail=None, infoLabels={}):
-    addVideo(label, url, icon, thumbnail, infoLabels, True)
+    addFile(label, url, icon, thumbnail, infoLabels, True)
 
 
-def addVideo(label, url, icon=None, thumbnail=None, infoLabels={}, isFolder=False):
+def addFile(label, url, icon=None, thumbnail=None, infoLabels={}, isFolder=False):
     li = xbmcgui.ListItem(label)
     li.setInfo('video', infoLabels)
     li.setArt({'banner': icon, 'fanart': icon, 'icon': icon, 'thumb': thumbnail})
@@ -270,7 +270,7 @@ def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
 
         url = common.build_url({'action': 'playVideo', 'video_id': item.get('id'), 'video_url': item.get('links')[0].get('url') if len(item.get('links')) > 0 else None, 'infoLabels': infoLabels})
 
-        addVideo(infoLabels.get('title'), url, iconImage, iconImage, infoLabels)
+        addFile(infoLabels.get('title'), url, iconImage, iconImage, infoLabels)
         xbmcplugin.setContent(addon_handle, 'episode')
 
     if response.get('totalCount') > ((page + 1) * videos_per_page):
