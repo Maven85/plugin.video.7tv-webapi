@@ -127,7 +127,7 @@ def rootDir():
 
 def showLiveChannels():
     selection = '{totalCount,data{title,tvShow{title},season{number},episode{number},images(subType:"cover"){url,subType},tvChannelName,description,productionYear,startTime,endTime}}'
-    url = serviceUrl + '/epg/now?selection=' + selection
+    url = '{}/epg/now?selection={}'.format(serviceUrl, selection)
 
     response = seventv.getUrl(url).get('response')
     content = response.get('data')
@@ -190,13 +190,13 @@ def listLetters(channel_id):
 
 def listTVShows(path, channel_id=None, letter=None, page=0):
     selection = '{totalCount,data{id,titles{default},images(subType:"Teaser"){url,subType},shortDescriptions{default}}}'
-#    url = serviceUrl + path + '?selection=' + selection + "&limit=" + str(videos_per_page) + '&skip=' + str(page * videos_per_page) + '&sortBy=titles.default&sortAscending=true'
-    url = serviceUrl + path + '?selection=' + selection + '&sortBy=titles.default&sortAscending=true' + '&limit=5000'
+    # url = '{}{}?selection={}&limit={}&skip={}&sortBy=titles.default&sortAscending=true'.format(serviceUrl, path, selection, videos_per_page, page * videos_per_page)
+    url = '{}{}?selection={}&sortBy=titles.default&sortAscending=true&limit=5000'.format(serviceUrl, path, selection)
 
     if channel_id is not None:
         url += '&channelId=' + channel_id
-#    if letter is not None:
-#        url += '&search=(^' + letter + ')'
+    # if letter is not None:
+        # url += '&search=(^{})'.format(letter)
 
     response = seventv.getUrl(url).get('response')
     content = response.get('data')
@@ -251,12 +251,12 @@ def getTVShow(channel_id, tvshow_id, iconImage, infoLabels):
 
 def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
     selection = '{totalCount,data{id,type,titles{default},images(subType:"Teaser"){url,subType},shortDescriptions{default},links,duration, subType,productionYear,createdAt,tvShow{titles{default}},season{number},episode{number,titles{default},metaDescriptions{default},productionYear,createdAt,modifiedAt,airdates}}}'
-    url = serviceUrl + path + '?selection=' + selection + '&limit=' + str(videos_per_page) + '&skip=' + str(page * videos_per_page) + '&sortBy=seasonsOrder&sortAscending=false'
+    url = '{}{}?selection={}&limit={}&skip={}&sortBy={}&sortAscending={}'.format(serviceUrl, path, selection, videos_per_page, page * videos_per_page, 'seasonsOrder' if tvshow_id is not None else 'airdate', 'true' if tvshow_id is not None else 'false')
 
     if channel_id is not None:
-        url += '&channelId=' + channel_id
+        url += '&channelId={}'.format(channel_id)
     if tvshow_id is not None:
-        url += '&tvShowId=' + tvshow_id
+        url += '&tvShowId={}'.format(tvshow_id)
     if video_type == tvShowDirs[0]:
         url += '&subType=!Hauptfilm'
     elif video_type == tvShowDirs[1]:
