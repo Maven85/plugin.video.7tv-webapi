@@ -105,6 +105,11 @@ channels = [
                 , 'label': 'TLC'
                 , 'icon': 'tlc.png'
               }
+            , {
+                  'id': '112'
+                , 'label': 'Eurosport'
+                , 'icon': 'eurosport.png'
+              }
            ]
 
 letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '#']
@@ -139,7 +144,7 @@ def showLiveChannels():
 
             url = common.build_url({'action': 'playLiveTV', 'property_name': channel.get('property_name'), 'client_location': channel.get('client_location'), 'access_token': channel.get('access_token'), 'client_token': channel.get('client_token'), 'callback': channel.get('callback'), 'infoLables': infoLabels})
             title = infoLabels.get('title') if infoLabels.get('tvshowtitle', None) is None or infoLabels.get('tvshowtitle') == infoLabels.get('title') else '[COLOR blue]' + infoLabels.get('tvshowtitle') + ' |[/COLOR] ' + infoLabels.get('title')
-            title = '[COLOR orange][' + channel.get('label') + '][/COLOR] ' + title
+            title = '[COLOR orange][{}][/COLOR] {}'.format(channel.get('label'), title)
             addFile(title, url, icon_path + channel.get('icon'), thumbnailImage, infoLabels)
 
     xbmcplugin.setContent(addon_handle, 'files')
@@ -246,7 +251,7 @@ def getTVShow(channel_id, tvshow_id, iconImage, infoLabels):
 
 def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
     selection = '{totalCount,data{id,type,titles{default},images(subType:"Teaser"){url,subType},shortDescriptions{default},links,duration, subType,productionYear,createdAt,tvShow{titles{default}},season{number},episode{number,titles{default},metaDescriptions{default},productionYear,createdAt,modifiedAt,airdates}}}'
-    url = serviceUrl + path + '?selection=' + selection + '&limit=' + str(videos_per_page) + '&skip=' + str(page * videos_per_page) + '&sortBy=airdate&sortAscending=false'
+    url = serviceUrl + path + '?selection=' + selection + '&limit=' + str(videos_per_page) + '&skip=' + str(page * videos_per_page) + '&sortBy=seasonsOrder&sortAscending=false'
 
     if channel_id is not None:
         url += '&channelId=' + channel_id
@@ -261,16 +266,19 @@ def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
     content = response.get('data')
 
     for item in content:
+        if len(item.get('links')) == 0:
+            continue
+
         iconImage = getIcon(item)
         infoLabels = getInfoLabel(item, 'video', channel_id)
-        infoLabels['title'] = infoLabels['title'] if tvshow_id is not None else '[COLOR blue]' + item.get('tvShow', {}).get('titles', {}).get('default', '') + ' |[/COLOR] ' + item.get('titles').get('default')
+        title = infoLabels['title'] if tvshow_id is not None else '[COLOR orange][{}][/COLOR] [COLOR blue]{} |[/COLOR] {}'.format(item.get('links')[0].get('brand'), item.get('tvShow', {}).get('titles', {}).get('default', ''), item.get('titles').get('default'))
 
         if tvshow_id is not None and infoLabels.get('season', None) is not None and infoLabels.get('episode', None) is not None:
-            infoLabels['title'] = '{:02d}x{:02d}. {}'.format(infoLabels.get('season'), infoLabels.get('episode'), infoLabels.get('title'))
+            title = '{:02d}x{:02d}. {}'.format(infoLabels.get('season'), infoLabels.get('episode'), infoLabels.get('title'))
 
-        url = common.build_url({'action': 'playVideo', 'video_id': item.get('id'), 'video_url': item.get('links')[0].get('url') if len(item.get('links')) > 0 else None, 'infoLabels': infoLabels})
+        url = common.build_url({'action': 'playVideo', 'video_id': item.get('id'), 'video_url': item.get('links')[0].get('url'), 'infoLabels': infoLabels})
 
-        addFile(infoLabels.get('title'), url, iconImage, iconImage, infoLabels)
+        addFile(title, url, iconImage, iconImage, infoLabels)
         xbmcplugin.setContent(addon_handle, 'episode')
 
     if response.get('totalCount') > ((page + 1) * videos_per_page):
@@ -286,13 +294,6 @@ def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
 
         url = common.build_url(parameter)
         addDir('Nächste Seite', url)
-
-    if tvshow_id is not None:
-        xbmcplugin.addSortMethod(addon_handle, sortMethod=xbmcplugin.SORT_METHOD_LABEL)
-        xbmcplugin.addSortMethod(addon_handle, sortMethod=xbmcplugin.SORT_METHOD_TITLE)
-        xbmcplugin.addSortMethod(addon_handle, sortMethod=xbmcplugin.SORT_METHOD_VIDEO_YEAR)
-        xbmcplugin.addSortMethod(addon_handle, sortMethod=xbmcplugin.SORT_METHOD_DURATION)
-        xbmcplugin.addSortMethod(addon_handle, sortMethod=xbmcplugin.SORT_METHOD_NONE)
 
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=True)
 
