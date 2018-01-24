@@ -127,7 +127,7 @@ def rootDir():
 
 def showLiveChannels():
     selection = '{totalCount,data{title,tvShow{title},season{number},episode{number},images(subType:"cover"){url,subType},tvChannelName,description,productionYear,startTime,endTime}}'
-    url = '{}/epg/now?selection={}'.format(serviceUrl, selection)
+    url = '%s/epg/now?selection=%s' % (serviceUrl, selection)
 
     response = seventv.getUrl(url).get('response')
     content = response.get('data')
@@ -144,7 +144,7 @@ def showLiveChannels():
 
             url = common.build_url({'action': 'playLiveTV', 'property_name': channel.get('property_name'), 'client_location': channel.get('client_location'), 'access_token': channel.get('access_token'), 'client_token': channel.get('client_token'), 'callback': channel.get('callback'), 'infoLables': infoLabels})
             title = infoLabels.get('title') if infoLabels.get('tvshowtitle', None) is None or infoLabels.get('tvshowtitle') == infoLabels.get('title') else '[COLOR blue]' + infoLabels.get('tvshowtitle') + ' |[/COLOR] ' + infoLabels.get('title')
-            title = '[COLOR orange][{}][/COLOR] {}'.format(channel.get('label'), title)
+            title = '[COLOR orange][%s][/COLOR] %s' % (channel.get('label'), title)
             addFile(title, url, icon_path + channel.get('icon'), thumbnailImage, infoLabels)
 
     xbmcplugin.setContent(addon_handle, 'files')
@@ -190,13 +190,13 @@ def listLetters(channel_id):
 
 def listTVShows(path, channel_id=None, letter=None, page=0):
     selection = '{totalCount,data{id,titles{default},images(subType:"Teaser"){url,subType},shortDescriptions{default}}}'
-    # url = '{}{}?selection={}&limit={}&skip={}&sortBy=titles.default&sortAscending=true'.format(serviceUrl, path, selection, videos_per_page, page * videos_per_page)
-    url = '{}{}?selection={}&sortBy=titles.default&sortAscending=true&limit=5000'.format(serviceUrl, path, selection)
+    # url = '%s%s?selection=%s&limit=%s&skip=%s&sortBy=titles.default&sortAscending=true' % (serviceUrl, path, selection, videos_per_page, page * videos_per_page)
+    url = '%s%s?selection=%s&sortBy=titles.default&sortAscending=true&limit=5000' % (serviceUrl, path, selection)
 
     if channel_id is not None:
         url += '&channelId=' + channel_id
     # if letter is not None:
-        # url += '&search=(^{})'.format(letter)
+        # url += '&search=(^%s)' % (letter)
 
     response = seventv.getUrl(url).get('response')
     content = response.get('data')
@@ -251,12 +251,12 @@ def getTVShow(channel_id, tvshow_id, iconImage, infoLabels):
 
 def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
     selection = '{totalCount,data{id,type,titles{default},images(subType:"Teaser"){url,subType},shortDescriptions{default},links,duration, subType,productionYear,createdAt,tvShow{titles{default}},season{number},episode{number,titles{default},metaDescriptions{default},productionYear,createdAt,modifiedAt,airdates}}}'
-    url = '{}{}?selection={}&limit={}&skip={}&sortBy={}&sortAscending={}'.format(serviceUrl, path, selection, videos_per_page, page * videos_per_page, 'seasonsOrder' if tvshow_id is not None else 'airdate', 'true' if tvshow_id is not None else 'false')
+    url = '%s%s?selection=%s&limit=%d&skip=%d&sortBy=%s&sortAscending=%s' % (serviceUrl, path, selection, videos_per_page, page * videos_per_page, 'seasonsOrder' if tvshow_id is not None else 'airdate', 'true' if tvshow_id is not None else 'false')
 
     if channel_id is not None:
-        url += '&channelId={}'.format(channel_id)
+        url += '&channelId=%s' % (channel_id)
     if tvshow_id is not None:
-        url += '&tvShowId={}'.format(tvshow_id)
+        url += '&tvShowId=%s' % format(tvshow_id)
     if video_type == tvShowDirs[0]:
         url += '&subType=!Hauptfilm'
     elif video_type == tvShowDirs[1]:
@@ -271,10 +271,10 @@ def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
 
         iconImage = getIcon(item)
         infoLabels = getInfoLabel(item, 'video', channel_id)
-        title = infoLabels['title'] if tvshow_id is not None else '[COLOR orange][{}][/COLOR] [COLOR blue]{} |[/COLOR] {}'.format(item.get('links')[0].get('brand'), item.get('tvShow', {}).get('titles', {}).get('default', ''), item.get('titles').get('default'))
+        title = infoLabels['title'] if tvshow_id is not None else '[COLOR orange][%s][/COLOR] [COLOR blue]%s |[/COLOR] %s' % (item.get('links')[0].get('brand'), item.get('tvShow', {}).get('titles', {}).get('default', ''), item.get('titles').get('default'))
 
         if tvshow_id is not None and infoLabels.get('season', None) is not None and infoLabels.get('episode', None) is not None:
-            title = '{:02d}x{:02d}. {}'.format(infoLabels.get('season'), infoLabels.get('episode'), infoLabels.get('title'))
+            title = '%02dx%02d. %s' % (infoLabels.get('season'), infoLabels.get('episode'), infoLabels.get('title'))
 
         url = common.build_url({'action': 'playVideo', 'video_id': item.get('id'), 'video_url': item.get('links')[0].get('url'), 'infoLabels': infoLabels})
 

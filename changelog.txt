@@ -1,3 +1,5 @@
+1.0.4.1
+- fix unicode error
 1.0.4
 - added sort methods for videos
 - added number of season and episode in episode's title
