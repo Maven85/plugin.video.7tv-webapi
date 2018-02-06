@@ -348,10 +348,10 @@ def getInfoLabel(item_data, item_type, channel_id):
             info['dateadded'] = datetime.fromtimestamp(dates[0].get('date')).strftime("%Y-%m-%d %H:%M:%S")
 
     if info.get('season', None) is None and item_data.get('titles', None) is not None and item_data.get('titles').get('default').find('Staffel') > -1:
-        info['season'] = re.compile('Staffel ([0-9]+)', re.DOTALL).findall(item_data.get('titles').get('default'))[0]
+        info['season'] = int(re.compile('Staffel ([0-9]+)', re.DOTALL).findall(item_data.get('titles').get('default'))[0])
 
     if info.get('episode', None) is None and item_data.get('titles', None) is not None and item_data.get('titles').get('default').find('Episode') > -1:
-        info['episode'] = re.compile('Episode ([0-9]+)', re.DOTALL).findall(item_data.get('titles').get('default'))[0]
+        info['episode'] = int(re.compile('Episode ([0-9]+)', re.DOTALL).findall(item_data.get('titles').get('default'))[0])
 
     if item_type == 'tvshow':
         info['tvshowtitle'] = info['title']
