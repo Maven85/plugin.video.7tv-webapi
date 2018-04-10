@@ -13,7 +13,7 @@ addon = xbmcaddon.Addon()
 addon_handle = int(sys.argv[1])
 icon_path = xbmc.translatePath(addon.getAddonInfo('path') + '/resources/media/channels/').decode('utf-8')
 
-serviceUrl = 'https://mobileapi.prosiebensat1.com/7tv/web/v1'
+serviceUrl = 'https://middleware.7tv.de/7tv/web/v1'
 
 img_profile = '/profile:ezone-teaser'
 img_sizes = ['140x79', '200x260', '229x122', '300x160', '620x348']
