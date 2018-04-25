@@ -11,7 +11,7 @@ from inputstreamhelper import Helper
 from hashlib import sha1
 
 addon = xbmcaddon.Addon()
-addon_handle = int(sys.argv[1])
+addon_handle = None
 apiKey = addon.getSetting('apiKey')
 if not apiKey:
     apiKey = '255d97968f286ada2c90548e34230628'

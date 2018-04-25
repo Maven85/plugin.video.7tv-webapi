@@ -10,7 +10,7 @@ import seventv
 import common
 
 addon = xbmcaddon.Addon()
-addon_handle = int(sys.argv[1])
+addon_handle = None
 icon_path = xbmc.translatePath(addon.getAddonInfo('path') + '/resources/media/channels/').decode('utf-8')
 
 serviceUrl = 'https://middleware.7tv.de/7tv/web/v1'

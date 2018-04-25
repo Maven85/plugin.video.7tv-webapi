@@ -10,6 +10,10 @@ import json
 import resources.lib.seventv as seventv
 import resources.lib.navigation as nav
 
+addon_handle = int(sys.argv[1])
+seventv.addon_handle = addon_handle
+nav.addon_handle = addon_handle
+
 params = urllib.unquote(sys.argv[2][1:])
 if len(params) > 0:
     if len(params) % 4 != 0:
