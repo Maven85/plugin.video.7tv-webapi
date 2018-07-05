@@ -1,3 +1,5 @@
+1.0.6
+- enabled python-caching
 1.0.5
 - preparation for python3
 1.0.4.1

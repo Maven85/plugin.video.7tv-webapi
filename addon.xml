@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.7tv-webapi" name="7TV Web API" version="1.0.5" provider-name="Maven">
+<addon id="plugin.video.7tv-webapi" name="7TV Web API" version="1.0.6" provider-name="Maven">
 	<requires>
 		<import addon="xbmc.python" version="2.14.0"/>
 		<import addon="inputstream.adaptive" version="1.0.8"/>
@@ -20,5 +20,6 @@
 		<forum></forum>
 		<website>www.7tv.de</website>
 		<source>https://github.com/Maven85/plugin.video.7tv-web</source>
+		<reuselanguageinvoker>true</reuselanguageinvoker>
 	</extension>
 </addon>
