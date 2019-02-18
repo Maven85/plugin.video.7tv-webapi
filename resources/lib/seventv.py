@@ -17,7 +17,7 @@ if not apiKey:
     apiKey = '255d97968f286ada2c90548e34230628'
     addon.setSetting('apiKey', apiKey)
 
-userAgent = 'User-Agent=Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'
+userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.109 Safari/537.36'
 
 
 def playVideo(video_id, client_location, source_id=None, infoLabels=None):
@@ -41,7 +41,7 @@ def playVideo(video_id, client_location, source_id=None, infoLabels=None):
 
         if isInputstream:
           for stream in json_data['sources']:
-            if  stream['mimetype'] == 'application/dash+xml':
+            if stream['mimetype'] == 'application/dash+xml':
               if int(source_id) < int(stream['id']):
                 source_id = stream['id']
         else:
@@ -84,15 +84,15 @@ def playVideo(video_id, client_location, source_id=None, infoLabels=None):
         except:
           data = ul
 
-    li = xbmcgui.ListItem(path=data + "|" + userAgent)
-    li.setProperty("inputstream.adaptive.license_type", "com.widevine.alpha")
-    li.setProperty("inputstream.adaptive.manifest_type", "mpd")
+    li = xbmcgui.ListItem(path='%s|%s' % (data, userAgent))
+    li.setProperty('inputstream.adaptive.license_type', 'com.widevine.alpha')
+    li.setProperty('inputstream.adaptive.manifest_type', 'mpd')
     li.setProperty('inputstreamaddon', 'inputstream.adaptive')
 
     try:
-        lic = json_data["drm"]["licenseAcquisitionUrl"]
-        token = json_data["drm"]["token"]
-        li.setProperty('inputstream.adaptive.license_key', lic + "?token=" + token + "|" + userAgent + "|R{SSM}|")
+        lic = json_data['drm']['licenseAcquisitionUrl']
+        token = json_data['drm']['token']
+        li.setProperty('inputstream.adaptive.license_key', '%s?token=%s|%s|R{SSM}|' % (lic, token, userAgent))
     except:
         pass
 
@@ -135,14 +135,15 @@ def playLiveTV(property_name, client_location, access_token, client_token, infoL
     data = getUrl(url)['urls']['dash']['widevine']
 
     li = xbmcgui.ListItem(path=data['url'] + "|" + userAgent)
-    li.setProperty("inputstream.adaptive.license_type", "com.widevine.alpha")
-    li.setProperty("inputstream.adaptive.manifest_type", "mpd")
+    li.setProperty('inputstream.adaptive.license_type', 'com.widevine.alpha')
+    li.setProperty('inputstream.adaptive.manifest_type', 'mpd')
+    li.setProperty('inputstream.adaptive.manifest_update_parameter', 'full')
     li.setProperty('inputstreamaddon', 'inputstream.adaptive')
 
     try:
-        lic = data["drm"]["licenseAcquisitionUrl"]
-        token = data["drm"]["token"]
-        li.setProperty('inputstream.adaptive.license_key', lic + "?token=" + token + "|" + userAgent + "|R{SSM}|")
+        lic = data['drm']['licenseAcquisitionUrl']
+        token = data['drm']['token']
+        li.setProperty('inputstream.adaptive.license_key', '%s?token=%s|%s|R{SSM}|' % (lic, token, userAgent))
     except:
         pass
 
@@ -152,21 +153,21 @@ def playLiveTV(property_name, client_location, access_token, client_token, infoL
     xbmcplugin.setResolvedUrl(addon_handle, True, li)
 
 
-def getUrl(url, data="x", header=""):
-    xbmc.log("Get Url: " + url)
+def getUrl(url, data=None, header=None):
+    xbmc.log('Get Url: %s' % url)
 
     opener = urllib2.build_opener()
-    if header == "":
-      opener.addheaders = [('User-Agent', userAgent), ('key', apiKey)]
+    if header:
+        opener.addheaders = header
     else:
-      opener.addheaders = header
+        opener.addheaders = [('User-Agent', userAgent), ('key', apiKey)]
     try:
-      if data != "x" :
-         content = opener.open(url, data=data).read()
-      else:
-         content = opener.open(url).read()
+        if data:
+            content = opener.open(url, data=data).read()
+        else:
+            content = opener.open(url).read()
     except urllib2.HTTPError as e:
-         xbmc.log("Error : " + e.read())
+        xbmc.log('Error : %s' % e.read())
 
     opener.close()
 
