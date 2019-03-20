@@ -136,7 +136,7 @@ def showLiveChannels():
     for channel in channels:
         infoLabels = {}
         thumbnailImage = None
-        if channel.get('property_name', None) is not None:
+        if channel.get('property_name', None):
             for channel_content in content:
                 if channel_content.get('tvChannelName').lower() == channel.get('label').lower():
                     infoLabels = getInfoLabel(channel_content, 'live', channel.get('id'))
@@ -154,7 +154,7 @@ def showLiveChannels():
 def showChannels():
     for channel in channels:
         parameter = {'action': 'listLetters'}
-        if channel.get('id', None) is not None:
+        if channel.get('id', None):
             parameter['channel_id'] = channel.get('id')
 
         url = common.build_url(parameter)
@@ -179,7 +179,7 @@ def addFile(label, url, icon=None, thumbnail=None, infoLabels={}, isFolder=False
 def listLetters(channel_id):
     for letter in letters:
         parameter = {'action': 'listTVShows', 'path': '/tvshows', 'letter': letter if letter != '#' else '\d', 'page': 0}
-        if channel_id is not None:
+        if channel_id:
             parameter['channel_id'] = channel_id
 
         url = common.build_url(parameter)
@@ -193,9 +193,9 @@ def listTVShows(path, channel_id=None, letter=None, page=0):
     # url = '%s%s?selection=%s&limit=%s&skip=%s&sortBy=titles.default&sortAscending=true' % (serviceUrl, path, selection, videos_per_page, page * videos_per_page)
     url = '%s%s?selection=%s&sortBy=titles.default&sortAscending=true&limit=5000' % (serviceUrl, path, selection)
 
-    if channel_id is not None:
+    if channel_id:
         url += '&channelId=' + channel_id
-    # if letter is not None:
+    # if letter:
         # url += '&search=(^%s)' % (letter)
 
     response = seventv.getUrl(url).get('response')
@@ -204,7 +204,7 @@ def listTVShows(path, channel_id=None, letter=None, page=0):
     for item in content:
         title = item.get('titles').get('default')
 
-        if letter is not None:
+        if letter:
             if letter != '\d' and re.search('(^[' + letter.lower() + letter.title() + '])', title) is None:
                 continue
             elif letter == '\d' and re.search('(^' + letter + ')', title) is None:
@@ -214,7 +214,7 @@ def listTVShows(path, channel_id=None, letter=None, page=0):
         infoLabels = getInfoLabel(item, 'tvshow', channel_id)
 
         parameter = {'action': 'getTVShow', 'tvshow_id': item.get('id'), 'iconImage': iconImage, 'infoLabels': infoLabels}
-        if channel_id is not None:
+        if channel_id:
             parameter['channel_id'] = channel_id
 
         url = common.build_url(parameter)
@@ -226,7 +226,7 @@ def listTVShows(path, channel_id=None, letter=None, page=0):
 #        page += 1
 #
 #        parameter = {'action': 'listTVShows', 'path': path, 'letter': letter if letter != '#' else '\d', 'page': page}
-#        if channel_id is not None:
+#        if channel_id:
 #            parameter['channel_id'] = channel_id
 #
 #        url = common.build_url(parameter)
@@ -238,7 +238,7 @@ def listTVShows(path, channel_id=None, letter=None, page=0):
 def getTVShow(channel_id, tvshow_id, iconImage, infoLabels):
     for tvShowDir in tvShowDirs:
         parameter = {'action': 'listVideos', 'path': '/videos', 'tvshow_id': tvshow_id, 'video_type': tvShowDir, 'page': 0}
-        if channel_id is not None:
+        if channel_id:
             parameter['channel_id'] = channel_id
 
         url = common.build_url(parameter)
@@ -251,11 +251,11 @@ def getTVShow(channel_id, tvshow_id, iconImage, infoLabels):
 
 def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
     selection = '{totalCount,data{id,type,titles{default},images(subType:"Teaser"){url,subType},shortDescriptions{default},links,duration, subType,productionYear,createdAt,tvShow{titles{default}},season{number},episode{number,titles{default},metaDescriptions{default},productionYear,createdAt,modifiedAt,airdates}}}'
-    url = '%s%s?selection=%s&limit=%d&skip=%d&sortBy=%s&sortAscending=%s' % (serviceUrl, path, selection, videos_per_page, page * videos_per_page, 'seasonsOrder' if tvshow_id is not None else 'airdate', 'true' if tvshow_id is not None else 'false')
+    url = '%s%s?selection=%s&limit=%d&skip=%d&sortBy=%s&sortAscending=%s' % (serviceUrl, path, selection, videos_per_page, page * videos_per_page, 'seasonsOrder' if tvshow_id else 'airdate', 'true' if tvshow_id else 'false')
 
-    if channel_id is not None:
+    if channel_id:
         url += '&channelId=%s' % (channel_id)
-    if tvshow_id is not None:
+    if tvshow_id:
         url += '&tvShowId=%s' % format(tvshow_id)
     if video_type == tvShowDirs[0]:
         url += '&subType=!Hauptfilm'
@@ -271,9 +271,9 @@ def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
 
         iconImage = getIcon(item)
         infoLabels = getInfoLabel(item, 'video', channel_id)
-        title = infoLabels['title'] if tvshow_id is not None else '[COLOR orange][%s][/COLOR] [COLOR blue]%s |[/COLOR] %s' % (item.get('links')[0].get('brand'), item.get('tvShow', {}).get('titles', {}).get('default', ''), item.get('titles').get('default'))
+        title = infoLabels['title'] if tvshow_id else '[COLOR orange][%s][/COLOR] [COLOR blue]%s |[/COLOR] %s' % (item.get('links')[0].get('brand'), item.get('tvShow', {}).get('titles', {}).get('default', ''), item.get('titles').get('default'))
 
-        if tvshow_id is not None and infoLabels.get('season', None) is not None and infoLabels.get('episode', None) is not None:
+        if tvshow_id and infoLabels.get('season', None) and infoLabels.get('episode', None):
             title = '%02dx%02d. %s' % (infoLabels.get('season'), infoLabels.get('episode'), infoLabels.get('title'))
 
         url = common.build_url({'action': 'playVideo', 'video_id': item.get('id'), 'video_url': item.get('links')[0].get('url'), 'infoLabels': infoLabels})
@@ -285,11 +285,11 @@ def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
         page += 1
 
         parameter = {'action': 'listVideos', 'path': path, 'tvshow_id': tvshow_id, 'video_type': video_type, 'page': page}
-        if channel_id is not None:
+        if channel_id:
             parameter['channel_id'] = channel_id
-        if tvshow_id is not None:
+        if tvshow_id:
             parameter['tvshow_id'] = tvshow_id
-        if video_type is not None:
+        if video_type:
             parameter['video_type'] = video_type
 
         url = common.build_url(parameter)
@@ -299,59 +299,59 @@ def listVideos(path, channel_id=None, tvshow_id=None, video_type=None, page=0):
 
 
 def getInfoLabel(item_data, item_type, channel_id):
+    xbmc.log("7TV Web API [getInfoLabel]: infolabels = %s" % item_data)
     info = {}
 
     if item_type != 'live':
-        info['title'] = item_data.get('titles').get('default') if item_data.get('titles', None) is not None and item_data.get('titles').get('default', '').find('Episode') == -1 else item_data.get('titles').get('default')[item_data.get('titles').get('default').find(':') + 1:]
-        if item_data.get('shortDescriptions', {}).get('default', None) is not None:
+        info['title'] = item_data.get('titles').get('default') if item_data.get('titles', None) and item_data.get('titles').get('default', '').find('Episode') == -1 else item_data.get('titles').get('default')[item_data.get('titles').get('default').find(':') + 1:]
+        if item_data.get('shortDescriptions', {}).get('default', None):
             info['plot'] = cleanhtml(item_data.get('shortDescriptions').get('default'))
     else:
-        info['title'] = item_data.get('title') if item_data.get('title') is not None else item_data.get('tvShow').get('title')
-        if item_data.get('description', None) is not None:
+        info['title'] = item_data.get('title') if item_data.get('title') else item_data.get('tvShow').get('title')
+        if item_data.get('description', None):
             info['plot'] = item_data.get('description')
 
-    if item_data.get('duration', None) is not None and item_data.get('duration') > 0:
+    if item_data.get('duration', None) and item_data.get('duration') > 0:
         info['duration'] = item_data.get('duration') / 1000
-    if item_data.get('productionYear', None) is not None and  item_data.get('productionYear') > 0 and item_data.get('productionYear') > 1901:
+    if item_data.get('productionYear', None) and  item_data.get('productionYear') > 0 and item_data.get('productionYear') > 1901:
         info['year'] = item_data.get('productionYear')
-    if item_data.get('createdAt', None) is not None and item_data.get('createdAt') > 0:
+    if item_data.get('createdAt', None) and item_data.get('createdAt') > 0:
         info['date'] = datetime.fromtimestamp(item_data.get('createdAt')).strftime("%d.%m.%Y")
-    if item_data.get('modifiedAt', None) is not None and item_data.get('modifiedAt') > 0:
+    if item_data.get('modifiedAt', None) and item_data.get('modifiedAt') > 0:
         info['date'] = datetime.fromtimestamp(item_data.get('modifiedAt')).strftime("%d.%m.%Y")
-    if item_data.get('startTime', None) is not None and item_data.get('startTime') > 0 and item_data.get('endTime', None) is not None and item_data.get('endTime') > 0:
-        info['plot'] = datetime.fromtimestamp(item_data.get('startTime')).strftime("%H:%M") + ' - ' + datetime.fromtimestamp(item_data.get('endTime')).strftime("%H:%M") + ("\n\n" + info.get('plot') if info.get('plot', None) is not None else '')
+    if item_data.get('startTime', None) and item_data.get('startTime') > 0 and item_data.get('endTime', None) and item_data.get('endTime') > 0:
+        info['plot'] = datetime.fromtimestamp(item_data.get('startTime')).strftime("%H:%M") + ' - ' + datetime.fromtimestamp(item_data.get('endTime')).strftime("%H:%M") + ("\n\n" + info.get('plot') if info.get('plot', None) else '')
 
     if len(item_data.get('tvShow', {})) > 0:
-        if item_data.get('tvShow', {}).get('titles', {}).get('default', None) is not None:
+        if item_data.get('tvShow', {}).get('titles', {}).get('default', None):
             info['tvshowtitle'] = item_data.get('tvShow').get('titles').get('default')
-        elif item_data.get('tvShow', {}).get('title', None) is not None:
+        elif item_data.get('tvShow', {}).get('title', None):
             info['tvshowtitle'] = item_data.get('tvShow').get('title')
 
-    if len(item_data.get('season', {})) > 0 and item_data.get('season').get('number', None) is not None and item_data.get('season').get('number') > 0:
+    if len(item_data.get('season', {})) > 0 and item_data.get('season').get('number', None) and item_data.get('season').get('number') > 0:
         info['season'] = item_data.get('season').get('number')
 
     if len(item_data.get('episode', {})) > 0:
-        # info['title'] = item_data.get('episode').get('titles').get('default') if item_data.get('episode').get('titles').get('default').find('Folge') == -1 else info['title']
-        if item_data.get('episode').get('number', None) is not None and item_data.get('episode').get('number') > 0:
+        if item_data.get('episode').get('number', None) and item_data.get('episode').get('number') > 0:
             info['episode'] = item_data.get('episode').get('number')
         elif 'season' in info:
             del info['season']
-        if item_data.get('episode').get('metaDescriptions', {}).get('default', None) is not None and item_data.get('episode').get('metaDescriptions', {}).get('default', '') != '':
+        if item_data.get('episode').get('metaDescriptions', {}).get('default', None) and item_data.get('episode').get('metaDescriptions', {}).get('default', '') != '':
             info['plot'] = item_data.get('episode').get('metaDescriptions').get('default')
-        if item_data.get('episode').get('productionYear', None) is not None and item_data.get('episode').get('productionYear') > 0 and item_data.get('episode').get('productionYear') > 1901:
+        if item_data.get('episode').get('productionYear', None) and item_data.get('episode').get('productionYear') > 0 and item_data.get('episode').get('productionYear') > 1901:
             info['year'] = item_data.get('episode').get('productionYear')
-        if item_data.get('episode').get('createdAt', None) is not None and item_data.get('episode').get('createdAt') > 0:
+        if item_data.get('episode').get('createdAt', None) and item_data.get('episode').get('createdAt') > 0:
             info['date'] = datetime.fromtimestamp(item_data.get('episode').get('createdAt')).strftime("%d.%m.%Y")
         if len(item_data.get('episode').get('airdates', {})) > 0:
             dates = [date for date in item_data.get('episode').get('airdates') if date.get('brand') == channel_id] if len([date for date in item_data.get('episode').get('airdates') if date.get('brand') == channel_id]) > 0 else item_data.get('episode').get('airdates')
             info['aired'] = datetime.fromtimestamp(dates[0].get('date')).strftime("%Y-%m-%d")
             info['dateadded'] = datetime.fromtimestamp(dates[0].get('date')).strftime("%Y-%m-%d %H:%M:%S")
 
-    if info.get('season', None) is None and item_data.get('titles', None) is not None and item_data.get('titles').get('default').find('Staffel') > -1:
-        info['season'] = int(re.compile('Staffel ([0-9]+)', re.DOTALL).findall(item_data.get('titles').get('default'))[0])
+    if info.get('season', None) is None and item_data.get('titles', None) and item_data.get('titles').get('default') and re.search('Staffel\s(\d+)', item_data.get('titles').get('default')):
+        info['season'] = int(re.search('Staffel\s(\d+)', item_data.get('titles').get('default')).group(1))
 
-    if info.get('episode', None) is None and item_data.get('titles', None) is not None and item_data.get('titles').get('default').find('Episode') > -1:
-        info['episode'] = int(re.compile('Episode ([0-9]+)', re.DOTALL).findall(item_data.get('titles').get('default'))[0])
+    if info.get('episode', None) is None and item_data.get('titles', None) and item_data.get('titles').get('default') and re.search('Episode\s(\d+)', item_data.get('titles').get('default')):
+        info['episode'] = int(re.search('Episode\s(\d+)', item_data.get('titles').get('default')).group(1))
 
     if item_type == 'tvshow':
         info['tvshowtitle'] = info['title']
